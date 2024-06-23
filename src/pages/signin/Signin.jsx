@@ -72,7 +72,7 @@ const Signin = () => {
       setSigninAnimation(true);
       try {
         const response = await axios.post(
-          "https://tanzeem-backend-dev.onrender.com/login/",
+          "https://backend.tanzeembhatkal.com/login/",
           signinCredentials
         );
         const { access, refresh } = response.data;
