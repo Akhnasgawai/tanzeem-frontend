@@ -63,15 +63,16 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg }) => {
   const handleCancel = () => {
     setSearchCriteria({
       query: "",
-      mobile_number: "",
+      mobileNumber: "",
       country: "",
       state: "",
       city: "",
       halqa: "",
+      page: 1,
     });
     setSearchFields({
       query: "",
-      mobile_number: "",
+      mobileNumber: "",
       country: "",
       state: "",
       city: "",
@@ -82,8 +83,8 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg }) => {
 
   return (
     <div>
-      <div className="row mb-3">
-        <div className="col-md-6">
+      <div className="row ">
+        <div className="col-md-6 mb-3">
           <Input
             name="query"
             label="Search By Name, Father Name or Surname"
@@ -92,18 +93,18 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg }) => {
             onChange={handleInputChange}
           />
         </div>
-        <div className="col-md-6">
+        <div className="col-md-6 mb-3">
           <Input
-            name="mobile_number"
+            name="mobileNumber"
             label="Mobile Number"
             placeholder="Mobile Number"
-            value={searchFields.mobile_number}
+            value={searchFields.mobileNumber}
             onChange={handleInputChange}
           />
         </div>
       </div>
-      <div className="row mb-3">
-        <div className="col-md-3">
+      <div className="row ">
+        <div className="col-md-3 mb-3">
           <SelectField
             name="country"
             label="Select Country"
@@ -112,7 +113,7 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg }) => {
             onChange={handleCountryChange}
           />
         </div>
-        <div className="col-md-3">
+        <div className="col-md-3 mb-3">
           <SelectField
             name="state"
             label="Select State"
@@ -123,7 +124,7 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg }) => {
             onChange={handleStateChange}
           />
         </div>
-        <div className="col-md-3">
+        <div className="col-md-3 mb-3">
           <Input
             name="city"
             label="City"
@@ -132,7 +133,7 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg }) => {
             onChange={handleInputChange}
           />
         </div>
-        <div className="col-md-3">
+        <div className="col-md-3 mb-3">
           <SelectField
             name="halqa"
             label="Select Halqa"
