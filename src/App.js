@@ -25,6 +25,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import AdminRoute from "./routes/ProtectedRoute";
 import UserRoute from "./routes/UserRoute"; // Corrected import path
 import ProtectedRoute from "./routes/ProtectedRoute";
+import Cookies from "js-cookie";
 
 function App() {
   const [collapseState, setCollapsedState] = useState(false);
@@ -52,7 +53,7 @@ function App() {
 
 const DefaultLayout = ({ collapseState, setCollapsedState }) => {
   const { user } = useAuth();
-
+  const role = Cookies.get("role");
   if (!user) {
     return <Navigate to="/signin" replace />;
   }
@@ -74,14 +75,19 @@ const DefaultLayout = ({ collapseState, setCollapsedState }) => {
               path="/add_members"
               element={<ProtectedRoute element={AddMembers} />}
             />
-            <Route
-              path="/all_users"
-              element={<ProtectedRoute element={AllUsers} />}
-            />
-            <Route
-              path="/add_users"
-              element={<ProtectedRoute element={AddUsers} />}
-            />
+            {role === "Administrator" && (
+              <>
+                <Route
+                  path="/all_users"
+                  element={<ProtectedRoute element={AllUsers} />}
+                />
+                <Route
+                  path="/add_users"
+                  element={<ProtectedRoute element={AddUsers} />}
+                />
+              </>
+            )}
+
             <Route
               path="/pending_members"
               element={<ProtectedRoute element={PendingMembers} />}

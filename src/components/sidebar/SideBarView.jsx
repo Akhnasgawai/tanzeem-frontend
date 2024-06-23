@@ -12,8 +12,10 @@ import {
   IndianRupee,
   Ban,
 } from "lucide-react";
+import Cookies from "js-cookie";
 
 const SideBarView = ({ collapseState, setCollapsedState }) => {
+  const role = Cookies.get("role");
   const adminMenuItems = [
     { to: "/all_members", icon: <User />, name: "All Members" },
     { to: "/add_members", icon: <Plus />, name: "Add Members" },
@@ -34,13 +36,25 @@ const SideBarView = ({ collapseState, setCollapsedState }) => {
 
   // Menu items for ordinary user
   const ordinaryMenuItems = [
-    { to: "/ordinary/dashboard", icon: <IndianRupee />, name: "Dashboard" },
-    { to: "/ordinary/profile", icon: <User />, name: "Profile" },
-    { to: "/ordinary/contact", icon: <Contact />, name: "Contact" },
+    { to: "/all_members", icon: <User />, name: "All Members" },
+    { to: "/add_members", icon: <Plus />, name: "Add Members" },
+    {
+      to: "/pending_members",
+      icon: <Hourglass />,
+      name: "Pending Members",
+    },
+    {
+      to: "/suspended_members",
+      icon: <Ban />,
+      name: "Suspended Members",
+    },
+
+    { to: "/membership", icon: <IndianRupee />, name: "Membership" },
   ];
 
-  //const menuItems = userRole === "admin" ? adminMenuItems : ordinaryMenuItems;
-  const menuItems = adminMenuItems;
+  const menuItems =
+    role === "Administrator" ? adminMenuItems : ordinaryMenuItems;
+  // const menuItems = adminMenuItems;
   const handleCollapse = () => {
     setCollapsedState(!collapseState);
   };
@@ -58,7 +72,7 @@ const SideBarView = ({ collapseState, setCollapsedState }) => {
         onClick={handleCollapse}
         className="pointer"
         collapsed={collapseState}
-      > 
+      >
         {collapseState ? <ArrowRight /> : <ArrowLeft />}
       </StyledCircle>
       <SideBar collapsed={collapseState}>
@@ -138,7 +152,7 @@ const Tanzeem = styled.h1`
 const Image = styled.div`
   display: flex;
   justify-content: center;
-  margin-top:${(props) => (props.collapsed ? "20px" : "0px")};
+  margin-top: ${(props) => (props.collapsed ? "20px" : "0px")};
 `;
 const StyledCircle = styled.div`
   height: 40px;
