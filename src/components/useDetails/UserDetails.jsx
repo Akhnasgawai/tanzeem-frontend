@@ -48,7 +48,7 @@ const UserDetails = ({ user, setShowUserDetails }) => {
               <Input label="Surname" value={user.surname} disabled />
             </div>
           </div>
-          <div className="row mb-2">
+          <div className="row">
             <div className="col-md-6 mb-3">
               <Input label="Father Name" value={user.father_name} disabled />
             </div>
@@ -56,7 +56,7 @@ const UserDetails = ({ user, setShowUserDetails }) => {
               <Input label="Email" value={user.email} disabled />
             </div>
           </div>
-          <div className="row mb-2">
+          <div className="row">
             <div className="col-md-6 mb-3">
               <Input label="Phone Number" value={user.mobile_number} disabled />
             </div>
@@ -68,7 +68,7 @@ const UserDetails = ({ user, setShowUserDetails }) => {
               />
             </div>
           </div>
-          <div className="row mb-2">
+          <div className="row ">
             <div className="col-md-6 mb-3">
               <Input
                 label="Qualification"
@@ -80,7 +80,7 @@ const UserDetails = ({ user, setShowUserDetails }) => {
               <Input label="Profession" value={user.profession} disabled />
             </div>
           </div>
-          <div className="row mb-2">
+          <div className="row ">
             <div className="col-md-6 mb-3">
               <Input
                 label="Place of Birth"
@@ -98,18 +98,18 @@ const UserDetails = ({ user, setShowUserDetails }) => {
           </div>
         </div>
       </div>
-      <div className="row mt-2  ">
-        <div className="col-md-4 mb-2">
+      <div className="row  ">
+        <div className="col-md-4 mb-3">
           <Input
             label="Membership Number"
             disabled
             value={user.membership_number}
           />
         </div>
-        <div className="col-md-4 mb-2">
+        <div className="col-md-4 mb-3">
           <Input label="Joining Date" disabled value={user.joining_date} />
         </div>
-        <div className="col-md-4 mb-2">
+        <div className="col-md-4 mb-3">
           <SelectField
             label="Type of Member"
             disabled={true}
