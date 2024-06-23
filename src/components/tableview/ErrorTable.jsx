@@ -13,14 +13,14 @@ const SkeletonTableView = ({ tableHeadings, errorMessage }) => {
     backgroundColor: `var(--primary-color)`,
     color: `var(--secondary-color)`,
     height: "55px",
-    borderTopLeftRadius: "6px",
+    borderTopLeftRadius: "0px",
   };
 
   const TableLastHeadStyle = {
     backgroundColor: `var(--primary-color)`,
     color: `var(--secondary-color)`,
     height: "55px",
-    borderTopRightRadius: "6px",
+    borderTopRightRadius: "0px",
   };
 
   const TableDataStyle = {
