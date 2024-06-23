@@ -15,7 +15,14 @@ const UserDetails = ({ user, setShowUserDetails }) => {
     setShowUserDetails(false);
   };
   const role = Cookies.get("role");
-  console.log(role, "role");
+
+  const handleDelete = () => {};
+
+  const handleEdit = () => {};
+
+  const handleApprove = () => {};
+
+  const handleDecline = () => {};
 
   return (
     <div className="px-4 mx-2 border shadow">
@@ -184,7 +191,7 @@ const UserDetails = ({ user, setShowUserDetails }) => {
           />
         </div>
       </div>
-      <div className="row">
+      <div className="row mb-2">
         <div className="col-md-12 mb-3">
           <Input
             label="Address"
@@ -202,17 +209,32 @@ const UserDetails = ({ user, setShowUserDetails }) => {
 
         {role === "Administrator" && (
           <>
-            <div className="col-md-3 mb-3">
+            <div className="col-md-3 ">
               <Button variant="edit" name="Edit" w100 />
             </div>
             <div className="col-md-3 mb-3">
-              <Button variant="danger" name="Delete" w100 />
+              <Button
+                variant="danger"
+                name="Delete"
+                w100
+                onClick={handleDelete}
+              />
             </div>
             <div className="col-md-3 mb-3">
-              <Button variant="secondary" name="Decline" w100 />
+              <Button
+                variant="secondary"
+                name="Decline"
+                w100
+                onClick={handleDecline}
+              />
             </div>
             <div className="col-md-3 mb-3">
-              <Button variant="primary" name="Approve" w100 />
+              <Button
+                variant="primary"
+                name="Approve"
+                w100
+                onClick={handleApprove}
+              />
             </div>
           </>
         )}
