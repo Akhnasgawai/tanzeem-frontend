@@ -1,0 +1,59 @@
+@import url("https://fonts.googleapis.com/css2?family=Lobster&family=Roboto+Condensed:wght@400;700&display=swap");
+
+:root {
+  --primary-color: #326f61;
+  --secondary-color: #e3f2ef;
+  --placeholder-color: #f4f4f6;
+  --danger-color: #800000;
+  --edit-color: #3d02bc;
+  --font-family: "Roboto Condensed", sans-serif;
+  --tanzeem-font: "Lobster";
+}
+
+body {
+  margin: 0;
+  font-family: "Roboto Condensed", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.cursor {
+  cursor: pointer;
+}
+
+.pagination-item {
+  list-style-type: none;
+  padding: 3px 11px;
+  border-radius: 4px;
+  background-color: var(--placeholder-color);
+  border: 4px var(--primary-color);
+  color: black;
+}
+
+.next-link {
+  padding: 3px 11px;
+  list-style-type: none;
+  border-radius: 4px;
+  background-color: var(--placeholder-color);
+  border: 4px var(--primary-color);
+  color: black;
+}
+
+.prev-link {
+  padding: 3px 11px;
+  list-style-type: none;
+  border-radius: 4px;
+  background-color: var(--placeholder-color);
+  border: var(--primary-color);
+  color: black;
+}
+
+.active-page {
+  background-color: var(--primary-color);
+  color: white;
+  border: 1px solid white;
+}
+
+.table-hover tbody tr:hover td {
+  background-color: var(--secondary-color);
+}
