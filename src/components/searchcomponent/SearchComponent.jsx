@@ -55,6 +55,7 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg }) => {
     }));
   };
 
+
   const handleSubmit = () => {
     setSearchCriteria(searchFields); // Call setSearchCriteria with updated searchFields
     setErrorMsg("Search Failed: No matching member found!");
@@ -63,15 +64,16 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg }) => {
   const handleCancel = () => {
     setSearchCriteria({
       query: "",
-      mobile_number: "",
+      mobileNumber: "",
       country: "",
       state: "",
       city: "",
       halqa: "",
+      page : 1
     });
     setSearchFields({
       query: "",
-      mobile_number: "",
+      mobileNumber: "",
       country: "",
       state: "",
       city: "",
@@ -94,10 +96,10 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg }) => {
         </div>
         <div className="col-md-6">
           <Input
-            name="mobile_number"
+            name="mobileNumber"
             label="Mobile Number"
             placeholder="Mobile Number"
-            value={searchFields.mobile_number}
+            value={searchFields.mobileNumber}
             onChange={handleInputChange}
           />
         </div>
