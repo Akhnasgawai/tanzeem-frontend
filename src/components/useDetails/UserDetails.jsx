@@ -202,16 +202,16 @@ const UserDetails = ({ user, setShowUserDetails }) => {
 
         {role === "Administrator" && (
           <>
-            <div className="col-md-3">
+            <div className="col-md-3 mb-3">
               <Button variant="edit" name="Edit" w100 />
             </div>
-            <div className="col-md-3">
+            <div className="col-md-3 mb-3">
               <Button variant="danger" name="Delete" w100 />
             </div>
-            <div className="col-md-3">
+            <div className="col-md-3 mb-3">
               <Button variant="secondary" name="Decline" w100 />
             </div>
-            <div className="col-md-3">
+            <div className="col-md-3 mb-3">
               <Button variant="primary" name="Approve" w100 />
             </div>
           </>
