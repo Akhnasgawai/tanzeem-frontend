@@ -84,7 +84,7 @@ const TableView = ({
       <div className="d-flex justify-content-center">
         <ReactPaginate
           previousLabel={"<"}
-          pageRangeDisplayed={5}
+          pageRangeDisplayed={2}
           nextLabel={">"}
           forcePage={currentPage - 1}
           pageCount={pageCount}
@@ -96,6 +96,8 @@ const TableView = ({
           previousLinkClassName="page-link "
           nextLinkClassName="page-link"
           activeClassName="active-page"
+          breakClassName="break border"
+          breakLabel={<span className="ellipsis">...</span>}
         />
       </div>
     </>

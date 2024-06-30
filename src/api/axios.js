@@ -1,5 +1,5 @@
 import axios from "axios";
-const BASE_URL = "https://backend.tanzeembhatkal.com";
+const BASE_URL = "https://tanzeem-backend-dev.onrender.com";
 
 export default axios.create({
   baseURL: BASE_URL,
