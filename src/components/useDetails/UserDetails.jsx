@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Input from "../input/Input";
 import SelectField from "../selectField/SelectField";
 import Button from "../button/Button";
@@ -6,6 +6,7 @@ import { ArrowBigLeft, ArrowBigLeftDash, CornerDownLeft } from "lucide-react";
 import styled from "styled-components";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import Cookies from "js-cookie";
+import { Accordion, Card } from "react-bootstrap";
 const UserDetails = ({ user, setShowUserDetails }) => {
   const defaultImageUrl =
     "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png";
@@ -23,6 +24,14 @@ const UserDetails = ({ user, setShowUserDetails }) => {
   const handleApprove = () => {};
 
   const handleDecline = () => {};
+
+  const [activeIndex, setActiveIndex] = useState(null);
+
+  const toggleAccordion = (index) => {
+    setActiveIndex(activeIndex === index ? null : index);
+  };
+
+  console.log("user", user);
 
   return (
     <div className="px-4 mx-2 border shadow">
@@ -200,6 +209,65 @@ const UserDetails = ({ user, setShowUserDetails }) => {
           />
         </div>
       </div>
+      {/* This is where the accordions are going to be  */}
+
+      {user.current_suspension_history.length > 0 && (
+        <div className="mb-3">
+          <div
+            className="accordion  accordion-flush"
+          >
+            {user.current_suspension_history.map((item, index) => (
+              <div className="accordion-item mb-3" key={item.id}>
+                <h2 className="accordion-header">
+                  <div
+                    className={`fw-bold accordion-button ${
+                      activeIndex === index ? "" : "collapsed"
+                    }`}
+                    type="button"
+                    onClick={() => toggleAccordion(index)}
+                    // aria-expanded={activeIndex === index}
+                    style={{
+                      backgroundColor: `var(--secondary-color)`,
+                      color: `var(--primary-color)`,
+                      fontSize: "20px",
+                      borderRadius: "0.25rem",
+                    }}
+                  >
+                    Suspension Details {index + 1}
+                  </div>
+                </h2>
+                <div
+                  id={`flush-collapse${index}`}
+                  className={`accordion-collapse collapse ${
+                    activeIndex === index ? "show" : ""
+                  }`}
+                  aria-labelledby={`flush-heading${index}`}
+                >
+                  <div className="accordion-body" style={{backgroundColor: `var(  --placeholder-color)`}}>
+                    <p>
+                      <strong>Reason:</strong> {item.reason}
+                    </p>
+                    <p>
+                      <strong>Start Date:</strong>{" "}
+                      {new Date(item.start_date).toLocaleDateString()}
+                    </p>
+                    <p>
+                      <strong>End Date:</strong>{" "}
+                      {new Date(item.end_date).toLocaleDateString()}
+                    </p>
+                    <p>
+                      <strong>Suspended By:</strong> {item.created_by.full_name}{" "}
+                      ({item.created_by.email})
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* This is before the buttons */}
       <div className="row mb-4 justify-content-end">
         {role === "Ordinary User" && user.status === "pending" && (
           <div className="col-md-3">
@@ -209,7 +277,7 @@ const UserDetails = ({ user, setShowUserDetails }) => {
 
         {role === "Administrator" && (
           <>
-            <div className="col-md-3 ">
+            <div className="col-md-3 mb-3 ">
               <Button variant="edit" name="Edit" w100 />
             </div>
             <div className="col-md-3 mb-3">

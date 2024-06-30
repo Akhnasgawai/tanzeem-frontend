@@ -42,7 +42,7 @@ const SuspendMembers = () => {
     });
   };
 
-  https: useEffect(() => {
+ useEffect(() => {
     setTableLoading(true);
     const controller = new AbortController();
     const getMembers = async () => {
@@ -105,7 +105,7 @@ const SuspendMembers = () => {
         <TableView
           tableHeadings={tableHeadings}
           memberlist={memberlist}
-          onRowClick={handleClick}
+          // onRowClick={handleClick}
           totalCount={totalCount}
           currentPage={currentPage}
           handlePageChange={handlePageChange}

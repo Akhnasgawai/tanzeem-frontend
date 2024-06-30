@@ -13,8 +13,7 @@ const TableView = ({
   currentPage,
   handlePageChange,
 }) => {
-  const membersPerPage = 12;
-
+  const membersPerPage = 1;
 
   const pageCount = Math.ceil(totalCount / membersPerPage);
 
