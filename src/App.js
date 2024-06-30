@@ -26,6 +26,7 @@ import AdminRoute from "./routes/ProtectedRoute";
 import UserRoute from "./routes/UserRoute"; // Corrected import path
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Cookies from "js-cookie";
+import ChangePassword from "./pages/changePassword/ChangePassword";
 
 function App() {
   const [collapseState, setCollapsedState] = useState(false);
@@ -99,6 +100,11 @@ const DefaultLayout = ({ collapseState, setCollapsedState }) => {
             <Route
               path="/membership"
               element={<ProtectedRoute element={Membership} />}
+            />
+
+            <Route
+              path="/changePassword"
+              element={<ProtectedRoute element={ChangePassword} />}
             />
 
             <Route path="*" element={<Navigate to="/signin" replace />} />

@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, UserPlus } from "lucide-react";
+import { ArrowLeft, ArrowRight, Settings, UserPlus } from "lucide-react";
 import React, { useEffect } from "react";
 import { useMediaQuery } from "react-responsive";
 import { NavLink } from "react-router-dom";
@@ -13,6 +13,7 @@ import {
   Ban,
 } from "lucide-react";
 import Cookies from "js-cookie";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 const SideBarView = ({ collapseState, setCollapsedState }) => {
   const role = Cookies.get("role");
@@ -87,17 +88,40 @@ const SideBarView = ({ collapseState, setCollapsedState }) => {
         </Image>
 
         {menuItems.map((item, index) => (
-          <MenuItem key={index} to={item.to} collapsed={collapseState}>
-            {collapseState ? (
-              item.icon
-            ) : (
-              <>
-                {item.icon}
-                <span>{item.name}</span>
-              </>
-            )}
-          </MenuItem>
+          <OverlayTrigger
+            key={index}
+            placement="bottom"
+            overlay={<Tooltip id={`tooltip-${index}`}>{item.name}</Tooltip>}
+          >
+            <MenuItem to={item.to} collapsed={collapseState}>
+              {collapseState ? (
+                item.icon
+              ) : (
+                <>
+                  {item.icon}
+                  <span>{item.name}</span>
+                </>
+              )}
+            </MenuItem>
+          </OverlayTrigger>
         ))}
+        <BottomMenuContainer>
+          <OverlayTrigger
+            placement="right"
+            overlay={<Tooltip>Change Password</Tooltip>}
+          >
+            <MenuItem to="/changePassword" collapsed={collapseState}>
+              {collapseState ? (
+                <Settings />
+              ) : (
+                <>
+                  <Settings />
+                  <span>Change Password</span>
+                </>
+              )}
+            </MenuItem>
+          </OverlayTrigger>
+        </BottomMenuContainer>
       </SideBar>
     </>
   );
@@ -172,4 +196,9 @@ const StyledCircle = styled.div`
   &:hover {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
   }
+`;
+
+const BottomMenuContainer = styled.div`
+  position: absolute;
+  bottom: 0;
 `;

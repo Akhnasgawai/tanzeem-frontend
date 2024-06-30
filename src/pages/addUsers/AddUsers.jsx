@@ -122,8 +122,8 @@ const AddUsers = () => {
   };
   return (
     <div className="px-4">
-      <div className="row mb-3">
-        <div className="col-md-6">
+      <div className="row ">
+        <div className="col-md-6 mb-3">
           <Input
             label="Name"
             placeholder="Enter Name"
@@ -132,7 +132,7 @@ const AddUsers = () => {
             onChange={handleInputChange}
           />
         </div>
-        <div className="col-md-6">
+        <div className="col-md-6 mb-3">
           <Input
             label="Mobile Number"
             placeholder="Enter Mobile Number"
@@ -143,8 +143,8 @@ const AddUsers = () => {
           />
         </div>
       </div>
-      <div className="row mb-3">
-        <div className="col-md-6">
+      <div className="row ">
+        <div className="col-md-6 mb-3">
           <Input
             label="Email"
             placeholder="Enter Email"
@@ -154,7 +154,7 @@ const AddUsers = () => {
             onChange={handleInputChange}
           />
         </div>
-        <div className="col-md-6">
+        <div className="col-md-6 mb-3">
           <Input
             label="Password"
             placeholder="Enter password"

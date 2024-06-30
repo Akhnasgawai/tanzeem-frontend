@@ -21,7 +21,7 @@ const TableView = ({
   const TableHeadStyle = {
     backgroundColor: `var(--primary-color)`,
     color: `var( --secondary-color)`,
-    height: "55px" /* Increase the height of the table head */,
+    height: "55px"
   };
 
   const TableFirstHeadStyle = {
