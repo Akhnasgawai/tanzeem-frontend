@@ -83,12 +83,13 @@ const TableView = ({
       <div className="d-flex justify-content-center">
         <ReactPaginate
           previousLabel={"<"}
-          pageRangeDisplayed={2}
+          // pageRangeDisplayed={3}
+          marginPagesDisplayed = {1}
           nextLabel={">"}
           forcePage={currentPage - 1}
           pageCount={pageCount}
           onPageChange={handlePageChange}
-          className="d-flex justify-content-center gap-2 align-items-center mt-3"
+          className="d-flex justify-content-center gap-2 align-items-center mt-3 "
           pageClassName="pagination-item border align-items-center"
           nextClassName="next-link border "
           previousClassName="prev-link border"

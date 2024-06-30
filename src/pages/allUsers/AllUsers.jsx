@@ -91,7 +91,7 @@ const AllUsers = () => {
     }));
   };
 
-  https: useEffect(() => {
+ useEffect(() => {
     setTableLoading(true);
     const controller = new AbortController();
     const getMembers = async () => {
