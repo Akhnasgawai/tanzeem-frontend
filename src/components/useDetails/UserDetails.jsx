@@ -1,13 +1,20 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Input from "../input/Input";
 import SelectField from "../selectField/SelectField";
 import Button from "../button/Button";
-import { ArrowBigLeft, ArrowBigLeftDash, CornerDownLeft } from "lucide-react";
 import styled from "styled-components";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import Cookies from "js-cookie";
-import { Accordion, Card } from "react-bootstrap";
-const UserDetails = ({ user, setShowUserDetails }) => {
+import { toast } from "react-toastify";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { ScaleLoader } from "react-spinners";
+
+const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
+  const axiosPrivate = useAxiosPrivate();
+  const controllerRef = useRef(null);
+  const [approveloading, setApproveLoading] = useState(false);
+  const [rejectloading, setRejectLoading] = useState(false);
+  const [error, setError] = useState(false);
   const defaultImageUrl =
     "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png";
 
@@ -21,17 +28,135 @@ const UserDetails = ({ user, setShowUserDetails }) => {
 
   const handleEdit = () => {};
 
-  const handleApprove = () => {};
+  const handleApprove = async () => {
+    setApproveLoading(true);
+    const controller = new AbortController();
+    controllerRef.current = controller;
+    try {
+      const response = await axiosPrivate.put(
+        `/update_member/${user.id}/`,
+        {
+          status: "approved",
+        },
+        {
+          signal: controller.signal,
+        }
+      );
+      if (response.data.errors) {
+        setError(true);
+      } else {
+        toast.success("Success: Member Approved!", {
+          position: "top-center",
+          autoClose: 2000,
+          closeOnClick: true,
+          closeButton: true,
+          hideProgressBar: false,
+          theme: "colored",
+          containerId: "1",
+        });
+      }
+    } catch (err) {
+      console.log("this is err", err);
+      if (err.response && err.response.data && err.response.data.errors) {
+        const error = err.response.data.errors;
+        toast.error(error, {
+          position: "top-center",
+          autoClose: 2000,
+          closeOnClick: true,
+          closeButton: true,
+          hideProgressBar: false,
+          theme: "colored",
+          containerId: "1",
+        });
+      } else {
+        toast.error("An unexpected error occurred", {
+          position: "top-center",
+          autoClose: 2000,
+          closeOnClick: true,
+          closeButton: true,
+          hideProgressBar: false,
+          theme: "colored",
+          containerId: "1",
+        });
+      }
+    } finally {
+      setApproveLoading(false);
+      reloadUserList();
+    }
 
-  const handleDecline = () => {};
+    return () => {
+      controller.abort();
+      controllerRef.current = null;
+    };
+  };
+
+  const handleReject = async () => {
+    setRejectLoading(true);
+    const controller = new AbortController();
+    controllerRef.current = controller;
+    try {
+      const response = await axiosPrivate.put(
+        `/update_member/${user.id}/`,
+        {
+          status: "rejected",
+        },
+        {
+          signal: controller.signal,
+        }
+      );
+      if (response.data.errors) {
+        setError(true);
+      } else {
+        toast.success("Success: Member Rejected!", {
+          position: "top-center",
+          autoClose: 2000,
+          closeOnClick: true,
+          closeButton: true,
+          hideProgressBar: false,
+          theme: "colored",
+          containerId: "1",
+        });
+      }
+    } catch (err) {
+      console.log("this is err", err);
+      if (err.response && err.response.data && err.response.data.errors) {
+        const error = err.response.data.errors;
+        toast.error(error, {
+          position: "top-center",
+          autoClose: 2000,
+          closeOnClick: true,
+          closeButton: true,
+          hideProgressBar: false,
+          theme: "colored",
+          containerId: "1",
+        });
+      } else {
+        toast.error("An unexpected error occurred", {
+          position: "top-center",
+          autoClose: 2000,
+          closeOnClick: true,
+          closeButton: true,
+          hideProgressBar: false,
+          theme: "colored",
+          containerId: "1",
+        });
+      }
+    } finally {
+      setRejectLoading(false);
+      reloadUserList();
+    }
+
+    return () => {
+      controller.abort();
+      controllerRef.current = null;
+    };
+  };
 
   const [activeIndex, setActiveIndex] = useState(null);
 
   const toggleAccordion = (index) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
-
-  console.log("user", user);
 
   return (
     <div className="px-4 mx-0 border shadow">
@@ -282,9 +407,54 @@ const UserDetails = ({ user, setShowUserDetails }) => {
         <div>
           <p>
             <Strong>Member Added At: </Strong>
-            <Span>{new Date(user.created_at).toLocaleDateString()}</Span>
+            <Span>
+              {" "}
+              {(() => {
+                const date = new Date(user.created_at);
+                const day = date.getDate();
+                const month = date.getMonth() + 1; // getMonth() returns month from 0 to 11
+                const year = date.getFullYear();
+                return `${day}-${month}-${year}`;
+              })()}
+            </Span>
           </p>
         </div>
+        {user.status !== "pending" && (
+          <>
+            <div>
+              <p>
+                <Strong>
+                  {user.status === "approved"
+                    ? "Member Approved By: "
+                    : "Member Rejected By: "}
+                </Strong>
+                <Span>{user.approved_by.full_name}</Span>
+              </p>
+            </div>
+            <div>
+              <p>
+                <Strong>
+                  {" "}
+                  <Strong>
+                    {user.status === "approved"
+                      ? "Member Approved At: "
+                      : "Member Rejected At: "}
+                  </Strong>
+                </Strong>
+                <Span>
+                  {" "}
+                  {(() => {
+                    const date = new Date(user.approved_at);
+                    const day = date.getDate();
+                    const month = date.getMonth() + 1; // getMonth() returns month from 0 to 11
+                    const year = date.getFullYear();
+                    return `${day}-${month}-${year}`;
+                  })()}
+                </Span>
+              </p>
+            </div>
+          </>
+        )}
       </div>
       {/* This is before the buttons */}
       <div className="row mb-4 justify-content-end">
@@ -307,22 +477,47 @@ const UserDetails = ({ user, setShowUserDetails }) => {
                 onClick={handleDelete}
               />
             </div>
-            <div className="col-md-3 mb-3">
-              <Button
-                variant="secondary"
-                name="Decline"
-                w100
-                onClick={handleDecline}
-              />
-            </div>
-            <div className="col-md-3 mb-3">
-              <Button
-                variant="primary"
-                name="Approve"
-                w100
-                onClick={handleApprove}
-              />
-            </div>
+            {user.status === "pending" && (
+              <>
+                <div className="col-md-3 mb-3">
+                  <Button
+                    name={
+                      rejectloading ? (
+                        <ButtonLoading>
+                          Rejecting
+                          <ScaleLoader color="black" height={10} />
+                        </ButtonLoading>
+                      ) : (
+                        "Reject"
+                      )
+                    }
+                    w100
+                    onClick={handleReject}
+                    variant="secondary"
+                  />
+                </div>
+                <div className="col-md-3 mb-3">
+                  <Button
+                    name={
+                      approveloading ? (
+                        <ButtonLoading>
+                          Approving
+                          <ScaleLoader
+                            color={`var(--secondary-color)`}
+                            height={10}
+                          />
+                        </ButtonLoading>
+                      ) : (
+                        "Approve"
+                      )
+                    }
+                    w100
+                    onClick={handleApprove}
+                    variant="primary"
+                  />
+                </div>
+              </>
+            )}
           </>
         )}
       </div>
@@ -342,4 +537,11 @@ const Span = styled.span`
 
 const Strong = styled.strong`
   letter-spacing: 0.07rem;
+`;
+
+const ButtonLoading = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
 `;

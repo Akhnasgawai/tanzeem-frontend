@@ -32,6 +32,7 @@ const AllMembers = () => {
   const [showUserDetailsSkeleton, setShowUserDetailsSkeleton] = useState(false);
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [userDetails, setUserDetails] = useState();
+  const [selectedMemberId, setSelectedMemberId] = useState(null);
   const [searchCriteria, setSearchCriteria] = useState({
     query: "",
     mobileNumber: "",
@@ -127,6 +128,7 @@ const AllMembers = () => {
 
   const handleRowClick = (member_id) => {
     // alert(JSON.stringify(member_id, null, 2));
+    setSelectedMemberId(member_id);
     setShowUserDetailsSkeleton(true);
     const controller = new AbortController();
     const getMembers = async () => {
@@ -178,8 +180,11 @@ const AllMembers = () => {
         <UserDetails
           user={userDetails}
           setShowUserDetails={setShowUserDetails}
+          reloadUserList={() => {
+            handleRowClick(selectedMemberId);
+          }}
         />
-      ) : (
+      ) : ( 
         <>
           <SearchComponent
             setSearchCriteria={setSearchCriteria}
