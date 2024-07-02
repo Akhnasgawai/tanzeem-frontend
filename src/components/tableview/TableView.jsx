@@ -1,4 +1,3 @@
-import { Edit, Pencil, Trash2 } from "lucide-react";
 import React, { useState } from "react";
 import ReactPaginate from "react-paginate";
 import styled from "styled-components";

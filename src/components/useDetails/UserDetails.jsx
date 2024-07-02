@@ -34,7 +34,7 @@ const UserDetails = ({ user, setShowUserDetails }) => {
   console.log("user", user);
 
   return (
-    <div className="px-4 mx-2 border shadow">
+    <div className="px-4 mx-0 border shadow">
       <div className="pt-1 ">
         <Icon className="cursor" onClick={handleBackClick}>
           <OverlayTrigger
@@ -213,9 +213,7 @@ const UserDetails = ({ user, setShowUserDetails }) => {
 
       {user.current_suspension_history.length > 0 && (
         <div className="mb-3">
-          <div
-            className="accordion  accordion-flush"
-          >
+          <div className="accordion  accordion-flush">
             {user.current_suspension_history.map((item, index) => (
               <div className="accordion-item mb-3" key={item.id}>
                 <h2 className="accordion-header">
@@ -243,7 +241,10 @@ const UserDetails = ({ user, setShowUserDetails }) => {
                   }`}
                   aria-labelledby={`flush-heading${index}`}
                 >
-                  <div className="accordion-body" style={{backgroundColor: `var(  --placeholder-color)`}}>
+                  <div
+                    className="accordion-body"
+                    style={{ backgroundColor: `var(  --placeholder-color)` }}
+                  >
                     <p>
                       <strong>Reason:</strong> {item.reason}
                     </p>
@@ -267,6 +268,24 @@ const UserDetails = ({ user, setShowUserDetails }) => {
         </div>
       )}
 
+      <hr />
+      <div>
+        <h5>
+          <p>For Office Use Only</p>
+        </h5>
+        <div>
+          <p>
+            <Strong>Member Added By: </Strong>
+            <Span>{user.created_by.full_name}</Span>
+          </p>
+        </div>
+        <div>
+          <p>
+            <Strong>Member Added At: </Strong>
+            <Span>{new Date(user.created_at).toLocaleDateString()}</Span>
+          </p>
+        </div>
+      </div>
       {/* This is before the buttons */}
       <div className="row mb-4 justify-content-end">
         {role === "Ordinary User" && user.status === "pending" && (
@@ -315,4 +334,12 @@ export default UserDetails;
 
 const Icon = styled.div`
   font-size: 32px;
+`;
+const Span = styled.span`
+  letter-spacing: 0.07rem;
+  color: grey;
+`;
+
+const Strong = styled.strong`
+  letter-spacing: 0.07rem;
 `;

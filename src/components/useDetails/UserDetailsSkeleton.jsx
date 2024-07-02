@@ -7,7 +7,7 @@ const UserDetailsSkeleton = () => {
     <SkeletonTheme color="#0e0c0c" highlightColor="#b8b8b8">
       <div className="px-4">
         <div className="row mb-4">
-          <div className="col-md-3">
+          <div className="col-md-3 px-0 mb-4">
             <Skeleton height={320} width={230} />
           </div>
           <div className="col-md-9">

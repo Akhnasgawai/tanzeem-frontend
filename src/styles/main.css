@@ -23,7 +23,7 @@ body {
 
 .pagination-item {
   list-style-type: none;
-  padding: 3px 11px;
+  padding: 3px 0.5rem;
   border-radius: 4px;
   background-color: var(--placeholder-color);
   border: 4px var(--primary-color);
@@ -31,7 +31,7 @@ body {
 }
 
 .next-link {
-  padding: 3px 11px;
+  padding: 3px 0.7rem;
   list-style-type: none;
   border-radius: 4px;
   background-color: var(--placeholder-color);
@@ -40,7 +40,7 @@ body {
 }
 
 .prev-link {
-  padding: 3px 11px;
+  padding: 3px 0.7rem;
   list-style-type: none;
   border-radius: 4px;
   background-color: var(--placeholder-color);
