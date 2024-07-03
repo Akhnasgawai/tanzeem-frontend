@@ -1,10 +1,11 @@
-import { LogOutIcon } from "lucide-react";
+import { LogOutIcon, Settings } from "lucide-react";
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import LogoutModal from "../modal/LogoutModal";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 const NavbarView = ({ collapseState }) => {
   const location = useLocation();
@@ -57,13 +58,31 @@ const NavbarView = ({ collapseState }) => {
         collapsed={collapseState}
       >
         <h2 className="px-3 fw-bold">{currentContent}</h2>
-        <Logout
-          collapsed={collapseState}
-          onClick={handleOpenModal}
-          className="pointer"
-        >
-          <LogOutIcon />
-        </Logout>
+        <div className="d-flex align-items-center gap-2 cursor">
+          <OverlayTrigger
+            placement="bottom"
+            overlay={
+              <Tooltip id="tooltip-change-password">Change Password</Tooltip>
+            }
+          >
+            <Setting to="/changePassword">
+              <Settings />
+            </Setting>
+          </OverlayTrigger>
+
+          <OverlayTrigger
+            placement="bottom"
+            overlay={<Tooltip id="tooltip-logout">Logout</Tooltip>}
+          >
+            <Logout
+              collapsed={collapseState}
+              onClick={handleOpenModal}
+              className="pointer"
+            >
+              <LogOutIcon />
+            </Logout>
+          </OverlayTrigger>
+        </div>
       </StyledNavBar>
 
       {isModalOpen && (
@@ -96,4 +115,9 @@ const StyledNavBar = styled.div`
 const Logout = styled.div`
   margin-right: 20px;
   cursor: pointer;
+`;
+
+const Setting = styled(NavLink)`
+  color: var(--primary-color);
+  text-decoration: none;
 `;
