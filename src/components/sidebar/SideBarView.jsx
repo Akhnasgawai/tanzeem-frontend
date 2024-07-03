@@ -105,7 +105,7 @@ const SideBarView = ({ collapseState, setCollapsedState }) => {
             </MenuItem>
           </OverlayTrigger>
         ))}
-        <BottomMenuContainer>
+        {/* <BottomMenuContainer>
           <OverlayTrigger
             placement="right"
             overlay={<Tooltip>Change Password</Tooltip>}
@@ -121,7 +121,7 @@ const SideBarView = ({ collapseState, setCollapsedState }) => {
               )}
             </MenuItem>
           </OverlayTrigger>
-        </BottomMenuContainer>
+        </BottomMenuContainer> */}
       </SideBar>
     </>
   );
