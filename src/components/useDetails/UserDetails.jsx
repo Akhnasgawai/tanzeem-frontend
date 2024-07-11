@@ -8,6 +8,7 @@ import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { ScaleLoader } from "react-spinners";
+import ConfirmationModal from "../modal/ConfirmationModal";
 
 const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
   const axiosPrivate = useAxiosPrivate();
@@ -17,6 +18,7 @@ const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
   const [error, setError] = useState(false);
   const defaultImageUrl =
     "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png";
+  const [showDeleteModal, SetShowDeleteModal] = useState(false);
 
   const handleBackClick = () => {
     // Set showUserDetails to false to show the initial content
@@ -24,7 +26,13 @@ const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
   };
   const role = Cookies.get("role");
 
-  const handleDelete = () => {};
+  const handleDelete = () => {
+   
+  };
+
+  const handleCloseModal = () =>{
+    SetShowDeleteModal(false)
+  }
 
   const handleEdit = () => {};
 
@@ -474,7 +482,7 @@ const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
                 variant="danger"
                 name="Delete"
                 w100
-                onClick={handleDelete}
+                onClick={()=> SetShowDeleteModal(true)}
               />
             </div>
             {user.status === "pending" && (
@@ -521,6 +529,13 @@ const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
           </>
         )}
       </div>
+      {showDeleteModal && (
+        <ConfirmationModal
+          isOpen={showDeleteModal}
+          onClose={handleCloseModal}
+          onLogout={handleDelete}
+        />
+      )}
     </div>
   );
 };
