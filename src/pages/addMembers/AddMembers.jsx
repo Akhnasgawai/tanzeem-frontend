@@ -456,7 +456,7 @@ const AddMembers = () => {
             <div className="col-md-6 mb-3">
               <Input
                 label="Joining Date"
-                placeholder="Enter Education"
+                placeholder="Enter Joining Date"
                 type="date"
                 name="joining_date"
                 value={member.joining_date}
@@ -515,7 +515,7 @@ const AddMembers = () => {
             options={currentStates
               .map((state) => state.name)
               .map((name) => ({ value: name, label: name }))}
-            name="permanent_state"
+            name="current_state"
             value={member.current_state}
             onChange={handleCurrentStateChange}
           />

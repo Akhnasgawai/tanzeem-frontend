@@ -11,7 +11,7 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg }) => {
   // Receive setSearchCriteria function
   const [searchFields, setSearchFields] = useState({
     query: "",
-    mobile_number: "",
+    mobileNumber: "",
     country: "",
     state: "",
     city: "",
@@ -102,7 +102,7 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg }) => {
             label="Search By Mobile Number"
             placeholder="Mobile Number"
             type="Number"
-            value={searchFields.mobile_number}
+            value={searchFields.mobileNumber}
             onChange={handleInputChange}
           />
         </div>

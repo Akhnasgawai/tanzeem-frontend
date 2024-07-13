@@ -143,13 +143,7 @@ const AllMembers = () => {
         );
         console.log("response", response);
         if (response.data.errors) {
-          // setError(response.data.errors);
-          // setMemberlist([]);
         } else {
-          // const transformedData = transformMemberData(response.data.results);
-          // setTotalCount(response.data.count);
-          // setMemberlist(transformedData);
-          // setError(null);
           setUserDetails(response.data.result);
         }
         // setTableLoading(false);
