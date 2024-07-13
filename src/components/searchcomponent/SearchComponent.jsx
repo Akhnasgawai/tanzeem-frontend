@@ -16,6 +16,7 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg }) => {
     state: "",
     city: "",
     halqa: "",
+    member_id: "",
   });
 
   const handleInputChange = (e) => {
@@ -69,6 +70,7 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg }) => {
       city: "",
       halqa: "",
       page: 1,
+      member_id: "",
     });
     setSearchFields({
       query: "",
@@ -77,6 +79,7 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg }) => {
       state: "",
       city: "",
       halqa: "",
+      member_id: "",
     });
     setErrorMsg("Currently, there are no members!");
   };
@@ -84,7 +87,7 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg }) => {
   return (
     <div>
       <div className="row ">
-        <div className="col-md-6 mb-3">
+        <div className="col-md-4 mb-3">
           <Input
             name="query"
             label="Search By Name, Father Name or Surname"
@@ -93,12 +96,22 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg }) => {
             onChange={handleInputChange}
           />
         </div>
-        <div className="col-md-6 mb-3">
+        <div className="col-md-4 mb-3">
           <Input
             name="mobileNumber"
-            label="Mobile Number"
+            label="Search By Mobile Number"
             placeholder="Mobile Number"
-            value={searchFields.mobileNumber}
+            type="Number"
+            value={searchFields.mobile_number}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className="col-md-4 mb-3">
+          <Input
+            name="member_id"
+            label="Search By Member ID"
+            placeholder="Member ID"
+            value={searchFields.member_id}
             onChange={handleInputChange}
           />
         </div>

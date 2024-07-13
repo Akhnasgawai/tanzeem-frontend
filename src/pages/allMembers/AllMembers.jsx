@@ -41,6 +41,7 @@ const AllMembers = () => {
     state: "",
     city: "",
     halqa: "",
+    member_id: "",
     page: currentPage,
   });
 

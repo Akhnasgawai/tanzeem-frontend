@@ -43,6 +43,7 @@ const PendingMembers = () => {
     state: "",
     city: "",
     halqa: "",
+    member_id: "",
     page: currentPage,
   });
 

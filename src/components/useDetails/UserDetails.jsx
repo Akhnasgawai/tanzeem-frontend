@@ -9,6 +9,10 @@ import { toast } from "react-toastify";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { ScaleLoader } from "react-spinners";
 import ConfirmationModal from "../modal/ConfirmationModal";
+import halqa from "../../data/halqa";
+import countries from "../../data/countries";
+import MemberTypes from "../../data/memberTypes";
+import { State } from "country-state-city";
 
 const UserDetails = ({
   user,
@@ -26,6 +30,110 @@ const UserDetails = ({
   const [showDeleteModal, SetShowDeleteModal] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [deleteReload, setDeleteReload] = useState(false);
+  const [formData, setFormData] = useState({
+    name: user.name,
+    surname: user.surname,
+    father_name: user.father_name,
+    date_of_birth: user.date_of_birth,
+    place_of_birth: user.place_of_birth,
+    email: user.email,
+    mobile_number: user.mobile_number,
+    whatsapp_number: user.whatsapp_number,
+    member_type: user.member_type,
+    qualification: user.qualification,
+    joining_date: user.joining_date,
+    profession: user.profession,
+    permanent_address: user.address.permanent_address,
+    permanent_halqa: user.address.permanent_halqa,
+    permanent_city: user.address.permanent_city,
+    permanent_state: user.address.permanent_state,
+    permanent_country: user.address.permanent_country,
+    current_address: user.address.current_address,
+    current_halqa: user.address.current_halqa,
+    current_city: user.address.current_city,
+    current_state: user.address.current_state,
+    current_country: user.address.current_country,
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevMember) => ({
+      ...prevMember,
+      [name]: value,
+    }));
+  };
+
+  const handleMemberTypeChange = (selectedOption) => {
+    setFormData((prevMember) => ({
+      ...prevMember,
+      member_type: selectedOption.value,
+    }));
+  };
+
+  const p_country = user.address.permanent_country;
+  const p_countryCode = getCodeforCountry(p_country);
+  const p_states = State.getStatesOfCountry(p_countryCode);
+  const [permanentStates, setPermanentStates] = useState(p_states);
+
+  const c_country = user.address.current_country;
+  const c_countryCode = getCodeforCountry(c_country);
+  const c_states = State.getStatesOfCountry(c_countryCode);
+  const [currentStates, setCurrentStates] = useState(c_states);
+
+  const handleCurrentCountryChange = (selectedOption) => {
+    setCurrentStates([]);
+    const country =
+      selectedOption.value.charAt(0).toUpperCase() +
+      selectedOption.value.slice(1);
+    const countryCode = getCodeforCountry(country);
+    const states = State.getStatesOfCountry(countryCode);
+    setCurrentStates(states);
+    setFormData((prevMember) => ({
+      ...prevMember,
+      current_country: selectedOption.value,
+    }));
+  };
+
+  const handlePermanentCountryChange = (selectedOption) => {
+    const country =
+      selectedOption.value.charAt(0).toUpperCase() +
+      selectedOption.value.slice(1);
+    const countryCode = getCodeforCountry(country);
+    const states = State.getStatesOfCountry(countryCode);
+    setPermanentStates(states);
+    setFormData((prevMember) => ({
+      ...prevMember,
+      permanent_country: selectedOption.value,
+    }));
+  };
+
+  const handlePermanentStateChange = (selectedOption) => {
+    setFormData((prevMember) => ({
+      ...prevMember,
+      permanent_state: selectedOption.value,
+    }));
+  };
+
+  const handleCurrentStateChange = (selectedOption) => {
+    setFormData((prevMember) => ({
+      ...prevMember,
+      current_state: selectedOption.value,
+    }));
+  };
+
+  const handlePermanentHalqaChange = (selectedOption) => {
+    setFormData((prevMember) => ({
+      ...prevMember,
+      permanent_halqa: selectedOption.value,
+    }));
+  };
+
+  const handleCurrentHalqaChange = (selectedOption) => {
+    setFormData((prevMember) => ({
+      ...prevMember,
+      current_halqa: selectedOption.value,
+    }));
+  };
 
   const handleEdit = () => {
     setIsEditMode(true);
@@ -35,8 +143,8 @@ const UserDetails = ({
     setIsEditMode(false);
   };
 
-  const handleSubmit = () => {
-    // Submit logic here
+  const handleEditSubmit = () => {
+    //Edit Submit logic here
     setIsEditMode(false);
   };
 
@@ -256,39 +364,63 @@ const UserDetails = ({
       <div className="row">
         <div className="col-md-3 mb-2">
           <img
-            src={user.image_url || defaultImageUrl}
+            src={formData.image_url || defaultImageUrl}
             alt="Members"
-            // width="230px"
-            // height="390px"
             className="img-fluid rounded mt-4"
           />
         </div>
         <div className="col-md-9 ">
           <div className="row">
             <div className="col-md-6  mb-3">
-              <Input label="Name" value={user.name} disabled />
+              <Input
+                label="Name"
+                value={isEditMode ? formData.name : user.name}
+                disabled={!isEditMode}
+                onChange={handleChange}
+              />
             </div>
             <div className="col-md-6  mb-3">
-              <Input label="Surname" value={user.surname} disabled />
+              <Input
+                label="Surname"
+                value={user.surname}
+                disabled={!isEditMode}
+                onChange={handleChange}
+              />
             </div>
           </div>
           <div className="row">
             <div className="col-md-6 mb-3">
-              <Input label="Father Name" value={user.father_name} disabled />
+              <Input
+                label="Father Name"
+                value={user.father_name}
+                disabled={!isEditMode}
+                onChange={handleChange}
+              />
             </div>
             <div className="col-md-6 mb-3">
-              <Input label="Email" value={user.email} disabled />
+              <Input
+                label="Email"
+                value={user.email}
+                disabled={!isEditMode}
+                onChange={handleChange}
+              />
             </div>
           </div>
           <div className="row">
             <div className="col-md-6 mb-3">
-              <Input label="Phone Number" value={user.mobile_number} disabled />
+              <Input
+                label="Phone Number"
+                value={user.mobile_number}
+                disabled={!isEditMode}
+                onChange={handleChange}
+              />
             </div>
             <div className="col-md-6 mb-3">
               <Input
                 label="Whatsapp Number"
                 value={user.whatsapp_number}
-                disabled
+                disabled={!isEditMode}
+                onChange={handleChange}
               />
             </div>
           </div>
@@ -297,11 +429,17 @@ const UserDetails = ({
               <Input
                 label="Qualification"
                 value={user.qualification}
-                disabled
+                disabled={!isEditMode}
+                onChange={handleChange}
               />
             </div>
             <div className="col-md-6 mb-3">
-              <Input label="Profession" value={user.profession} disabled />
+              <Input
+                label="Profession"
+                value={user.profession}
+                disabled={!isEditMode}
+                onChange={handleChange}
+              />
             </div>
           </div>
           <div className="row ">
@@ -309,14 +447,16 @@ const UserDetails = ({
               <Input
                 label="Place of Birth"
                 value={user.place_of_birth}
-                disabled
+                disabled={!isEditMode}
+                onChange={handleChange}
               />
             </div>
             <div className="col-md-6 mb-3">
               <Input
                 label="Date of Birth"
                 value={user.date_of_birth}
-                disabled
+                disabled={!isEditMode}
+                onChange={handleChange}
               />
             </div>
           </div>
@@ -326,18 +466,26 @@ const UserDetails = ({
         <div className="col-md-4 mb-3">
           <Input
             label="Membership Number"
-            disabled
+            disabled={!isEditMode}
             value={user.membership_number}
+            onChange={handleChange}
           />
         </div>
         <div className="col-md-4 mb-3">
-          <Input label="Joining Date" disabled value={user.joining_date} />
+          <Input
+            label="Joining Date"
+            disabled={!isEditMode}
+            value={user.joining_date}
+            onChange={handleChange}
+          />
         </div>
         <div className="col-md-4 mb-3">
           <SelectField
             label="Type of Member"
-            disabled={true}
+            disabled={!isEditMode}
             value={user.member_type}
+            options={MemberTypes}
+            onChange={handleMemberTypeChange}
           />
         </div>
       </div>
@@ -348,25 +496,38 @@ const UserDetails = ({
         <div className="col-md-3 mb-3">
           <SelectField
             label="Country"
-            disabled
+            disabled={!isEditMode}
             value={user.address.current_country}
+            options={countries}
+            onChange={handleCurrentCountryChange}
           />
         </div>
         <div className="col-md-3 mb-3">
           <SelectField
             label="State"
-            disabled
+            disabled={!isEditMode}
             value={user.address.current_state}
+            options={currentStates
+              .map((state) => state.name)
+              .map((name) => ({ value: name, label: name }))}
+            onChange={handleCurrentStateChange}
           />
         </div>
         <div className="col-md-3 mb-3">
-          <Input label="City" disabled value={user.address.current_city} />
+          <Input
+            label="City"
+            disabled={!isEditMode}
+            value={user.address.current_city}
+            onChange={handleChange}
+          />
         </div>
         <div className="col-md-3 mb-3">
           <SelectField
             label="Halqa"
-            disabled
+            disabled={!isEditMode}
             value={user.address.current_halqa}
+            options={halqa}
+            onChange={handleCurrentHalqaChange}
           />
         </div>
       </div>
@@ -375,7 +536,8 @@ const UserDetails = ({
           <Input
             label="Address"
             value={user.address.current_address}
-            disabled
+            disabled={!isEditMode}
+            onChange={handleChange}
           />
         </div>
       </div>
@@ -386,25 +548,38 @@ const UserDetails = ({
         <div className="col-md-3 mb-3">
           <SelectField
             label="Country"
-            disabled
+            disabled={!isEditMode}
             value={user.address.permanent_country}
+            options={countries}
+            onChange={handlePermanentCountryChange}
           />
         </div>
         <div className="col-md-3 mb-3">
           <SelectField
             label="State"
-            disabled
+            disabled={!isEditMode}
             value={user.address.permanent_state}
+            options={permanentStates
+              .map((state) => state.name)
+              .map((name) => ({ value: name, label: name }))}
+            onChange={handlePermanentStateChange}
           />
         </div>
         <div className="col-md-3 mb-3">
-          <Input label="City" disabled value={user.address.permanent_city} />
+          <Input
+            label="City"
+            disabled
+            value={user.address.permanent_city}
+            onChange={handleChange}
+          />
         </div>
         <div className="col-md-3 mb-3">
           <SelectField
             label="Halqa"
-            disabled
+            disabled={!isEditMode}
             value={user.address.permanent_halqa}
+            options={halqa}
+            onChange={handlePermanentHalqaChange}
           />
         </div>
       </div>
@@ -413,7 +588,8 @@ const UserDetails = ({
           <Input
             label="Address"
             value={user.address.permanent_address}
-            disabled
+            disabled={!isEditMode}
+            onChange={handleChange}
           />
         </div>
       </div>
@@ -556,7 +732,7 @@ const UserDetails = ({
                 variant="primary"
                 name="Submit"
                 w100
-                onClick={handleSubmit}
+                onClick={handleEditSubmit}
               />
             </div>
           </>
@@ -663,3 +839,26 @@ const ButtonLoading = styled.div`
   align-items: center;
   gap: 0.5rem;
 `;
+
+export const Countries = {
+  India: "IN",
+  China: "CN",
+  Singapore: "SG",
+  Malaysia: "MY",
+  Hongkong: "HK",
+  Taiwan: "TW",
+  Thailand: "TH",
+  Iran: "IR",
+  UAE: "AE",
+  Bahrain: "BH",
+  Kuwait: "KW",
+  Oman: "OM",
+  KSA: "SA",
+  Qatar: "QA",
+  UK: "GB",
+  USA: "US",
+};
+
+export const getCodeforCountry = (name) => {
+  return Countries[name];
+};
