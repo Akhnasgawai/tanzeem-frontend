@@ -1,16 +1,141 @@
 import React, { useState } from "react";
+import Input from "../../components/input/Input";
 import styled from "styled-components";
+import Button from "../../components/button/Button";
+import SelectField from "../../components/selectField/SelectField";
+import UserTypes from "../../data/userTypes";
+import axios from "axios";
+import Bubbles from "react-loading";
+import { ScaleLoader } from "react-spinners";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { jwtDecode } from "jwt-decode";
+import { useAuth } from "../../context/AuthContext";
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 const Sign_In = () => {
-  const circleSizes = [20, 160, 150, 140, 30, 150, 10]; // Sizes for each circle
-  const whiteSizes = [20, 150, 200, 90, 80, 70, 60, 30, 70, 50, 40];
+  const [signinCredentials, setSigninCredentials] = useState({
+    email: "",
+    password: "",
+    group: UserTypes[1].value,
+  });
+  const [signinAnimation, setSigninAnimation] = useState(false);
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const handleInputChange = (e) => {
+    setSigninAnimation(false);
+    const { name, value } = e.target;
+    setSigninCredentials((prevCredentials) => ({
+      ...prevCredentials,
+      [name]: value,
+    }));
+  };
+
+  const handleSelectChange = (selectedOption) => {
+    setSigninAnimation(false);
+    setSigninCredentials((prevCredentials) => ({
+      ...prevCredentials,
+      group: selectedOption.value,
+    }));
+  };
+
+  const areAllValuesFilled = () => {
+    if (signinCredentials.email !== "" && signinCredentials.password !== "")
+      return true;
+    else if (signinCredentials.email === "") {
+      toast.error("Please Enter the Email!", {
+        position: "top-center",
+        autoClose: 2000,
+        closeOnClick: true,
+        closeButton: true,
+        hideProgressBar: false,
+        theme: "colored",
+        containerId: "1",
+      });
+    } else if (signinCredentials.password === "") {
+      toast.error("Please Enter the Password!", {
+        position: "top-center",
+        autoClose: 2000,
+        closeOnClick: true,
+        closeButton: true,
+        hideProgressBar: false,
+        theme: "colored",
+        containerId: "1",
+      });
+    }
+  };
+
+  const handleSignIn = async () => {
+    if (areAllValuesFilled()) {
+      setSigninAnimation(true);
+      try {
+        const response = await axios.post(
+          "https://tanzeem-backend-dev.onrender.com/login/",
+          signinCredentials
+        );
+        const { access, refresh } = response.data;
+
+        // // Set cookies
+        // Cookies.set("accessToken", access, { expires: 1 }); // 1 day
+        // Cookies.set("refreshToken", refresh, { expires: 7 }); // 7 days
+
+        // Decode the access token to get user information
+        const decodedToken = jwtDecode(access);
+        const userRole = decodedToken.role;
+        const userName = decodedToken.name;
+        const email = decodedToken.email;
+
+        // Set additional cookies
+        Cookies.set("username", userName);
+        Cookies.set("role", userRole);
+        Cookies.set("email", email);
+
+        // Log in the user in the context
+        login(userRole, access, refresh);
+
+        toast.success("You are successfully logged in!", {
+          position: "top-center",
+          autoClose: 2000,
+          closeOnClick: true,
+          closeButton: true,
+          hideProgressBar: false,
+          theme: "colored",
+          containerId: "1",
+        });
+
+        console.log("user role", userRole);
+        // Navigate to the appropriate route based on the role
+        if (userRole === "Administrator" || "Ordinary User") {
+          navigate("/all_members");
+        } else {
+          navigate("/");
+        }
+      } catch (error) {
+        const signinError = error.response.data.errors;
+        toast.error(signinError, {
+          position: "top-center",
+          autoClose: 2000,
+          closeOnClick: true,
+          closeButton: true,
+          hideProgressBar: false,
+          theme: "colored",
+          containerId: "1",
+        });
+        setSigninAnimation(false);
+      }
+    }
+  };
+
+  const circleSizes = [100, 20, 140, 50,  220]; // Sizes for each circle
 
   return (
     <Container>
       <Left>
         <Wrapper>
           <Welcome>Welcome!</Welcome>
-          <Logo></Logo>
+          <Logo />
           <Lines>
             Majlise Islah wa Tanzeem is a dedicated organization committed to
             the improvement and organization of our community, fostering unity
@@ -18,33 +143,83 @@ const Sign_In = () => {
           </Lines>
         </Wrapper>
       </Left>
-      <CirclesContainer>
-        {circleSizes.map((size, index) => (
-          <CircleGroup key={index}>
-            <MiddleCircle size={size} />
-            {whiteSizes.map((whiteSize, idx) => (
-              <WhiteCircle key={idx} size={whiteSize} />
-            ))}
-          </CircleGroup>
-        ))}
-      </CirclesContainer>
+
+      <Middle>
+        <CirclesContainer>
+          {circleSizes.map((size, index) => (
+            <CirclePair key={index}>
+              <WhiteCircle size={size} />
+
+            </CirclePair>
+          ))}
+        </CirclesContainer>
+      </Middle>
 
       <Right>
-        <Card></Card>
+        <Card>
+          <div className="row mb-2">
+            <div className="col">
+              <Input
+                label="Email"
+                type="email"
+                placeholder="Enter your Email"
+                name="email"
+                value={signinCredentials.email}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+          <div className="row mb-3">
+            <div className="col">
+              <Input
+                label="Password"
+                type="password"
+                placeholder="Enter your Password"
+                name="password"
+                value={signinCredentials.password}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+          <div className="row mb-3">
+            <div className="col">
+              <SelectField
+                options={UserTypes}
+                name="group"
+                label="Type of User"
+                value={signinCredentials.group}
+                onChange={handleSelectChange}
+              />
+            </div>
+          </div>
+          <div className="row mb-2 p-0">
+            <div className="col-md-12">
+              <ButtonWrapper>
+                <Button
+                  name={
+                    signinAnimation ? (
+                      <ScaleLoader
+                        color={`var(--secondary-color)`}
+                        height={20}
+                      />
+                    ) : (
+                      "Sign In"
+                    )
+                  }
+                  variant="primary"
+                  onClick={handleSignIn}
+                  disable={signinAnimation ? true : false}
+                />
+              </ButtonWrapper>
+            </div>
+          </div>
+        </Card>
       </Right>
     </Container>
   );
 };
 
 export default Sign_In;
-
-const ButtonWrapper = styled.div`
-  width: 100%;
-
-  button {
-    width: 100%; /* Make the button occupy the full width of its parent */
-  }
-`;
 
 const Container = styled.div`
   display: flex;
@@ -60,6 +235,16 @@ const Left = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const Middle = styled.div`
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 `;
 
 const Right = styled.div`
@@ -112,48 +297,41 @@ const Wrapper = styled.div`
 `;
 
 const CirclesContainer = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px; /* Space between the circle groups */
 `;
 
-const CircleGroup = styled.div`
-  position: relative;
+const CirclePair = styled.div`
   display: flex;
   align-items: center;
-`;
-
-const LightCircle = styled.div`
-  width: ${(props) => props.size}px;
-  height: ${(props) => props.size}px;
-  background: radial-gradient(circle, white 0%, #96d6c7 100%);
-  border-radius: 50%;
-  opacity: 0.9;
-  z-index: 1;
+  margin: 0;
 `;
 
 const MiddleCircle = styled.div`
   width: ${(props) => props.size}px;
   height: ${(props) => props.size}px;
-  background: radial-gradient(circle, white 0%, #387466 100%);
+  background: radial-gradient(circle, white 0%, #22473e 100%);
   border-radius: 50%;
   opacity: 0.9;
-  z-index: 1;
+  margin-left: -120px;
+  z-index: 0;
 `;
 
 const WhiteCircle = styled.div`
   width: ${(props) => props.size}px;
-  height: ${(props) => props.size}px;
-  background: white;
+  height: ${(props) => props.size + 100}px;
+  background: radial-gradient(circle, white 0%, white 100%);
   border-radius: 50%;
-  position: absolute;
-  top: 50%;
-  left: 0%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
+  opacity: 1;
+
+  z-index: 1;
+`;
+
+const ButtonWrapper = styled.div`
+  width: 100%;
+
+  button {
+    width: 100%; /* Make the button occupy the full width of its parent */
+  }
 `;
