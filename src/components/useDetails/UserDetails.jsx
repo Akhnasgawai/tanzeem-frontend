@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Input from "../input/Input";
 import SelectField from "../selectField/SelectField";
 import Button from "../button/Button";
@@ -32,31 +32,7 @@ const UserDetails = ({
   const [showDeleteModal, SetShowDeleteModal] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [deleteReload, setDeleteReload] = useState(false);
-  const [formData, setFormData] = useState({
-    name: user.name,
-    surname: user.surname,
-    father_name: user.father_name,
-    date_of_birth: user.date_of_birth,
-    place_of_birth: user.place_of_birth,
-    email: user.email,
-    mobile_number: user.mobile_number,
-    whatsapp_number: user.whatsapp_number,
-    member_type: user.member_type,
-    qualification: user.qualification,
-    joining_date: user.joining_date,
-    profession: user.profession,
-    permanent_address: user.permanent_address,
-    permanent_halqa: user.permanent_halqa,
-    permanent_city: user.permanent_city,
-    permanent_state: user.permanent_state,
-    permanent_country: user.permanent_country,
-    current_address: user.current_address,
-    current_halqa: user.current_halqa,
-    current_city: user.current_city,
-    current_state: user.current_state,
-    current_country: user.current_country,
-  });
-
+  const [formData, setFormData] = useState({});
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevMember) => ({
@@ -64,6 +40,35 @@ const UserDetails = ({
       [name]: value,
     }));
   };
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name,
+        surname: user.surname,
+        father_name: user.father_name,
+        date_of_birth: user.date_of_birth,
+        place_of_birth: user.place_of_birth,
+        email: user.email,
+        mobile_number: user.mobile_number,
+        whatsapp_number: user.whatsapp_number,
+        member_type: user.member_type,
+        qualification: user.qualification,
+        joining_date: user.joining_date,
+        profession: user.profession,
+        permanent_address: user.permanent_address,
+        permanent_halqa: user.permanent_halqa,
+        permanent_city: user.permanent_city,
+        permanent_state: user.permanent_state,
+        permanent_country: user.permanent_country,
+        current_address: user.current_address,
+        current_halqa: user.current_halqa,
+        current_city: user.current_city,
+        current_state: user.current_state,
+        current_country: user.current_country,
+      });
+    }
+  }, [user]);
 
   const handleMemberTypeChange = (selectedOption) => {
     setFormData((prevMember) => ({
@@ -169,9 +174,69 @@ const UserDetails = ({
     });
   };
 
-  const handleEditSubmit = () => {
+  const handleEditSubmit = async () => {
     //Edit Submit logic here
     setIsEditMode(false);
+    const controller = new AbortController();
+    controllerRef.current = controller;
+    console.log("FormData being sent:", formData);
+    try {
+      const response = await axiosPrivate.put(
+        `/update_member/${user.id}/`,
+        formData, // Directly passing formData
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          signal: controller.signal,
+        }
+      );
+      if (response.data.errors) {
+        setError(true);
+      } else {
+        toast.success("Success: Edit Successful!", {
+          position: "top-center",
+          autoClose: 2000,
+          closeOnClick: true,
+          closeButton: true,
+          hideProgressBar: false,
+          theme: "colored",
+          containerId: "1",
+        });
+      }
+    } catch (err) {
+      console.log("this is err", err);
+      if (err.response && err.response.data && err.response.data.errors) {
+        const error = err.response.data.errors;
+        toast.error(error, {
+          position: "top-center",
+          autoClose: 2000,
+          closeOnClick: true,
+          closeButton: true,
+          hideProgressBar: false,
+          theme: "colored",
+          containerId: "1",
+        });
+      } else {
+        toast.error("An unexpected error occurred", {
+          position: "top-center",
+          autoClose: 2000,
+          closeOnClick: true,
+          closeButton: true,
+          hideProgressBar: false,
+          theme: "colored",
+          containerId: "1",
+        });
+      }
+    } finally {
+      reloadUserList();
+      setReload();
+    }
+
+    return () => {
+      controller.abort();
+      controllerRef.current = null;
+    };
   };
 
   const handleBackClick = () => {
