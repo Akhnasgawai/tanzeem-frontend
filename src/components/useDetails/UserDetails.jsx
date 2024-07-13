@@ -10,7 +10,12 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { ScaleLoader } from "react-spinners";
 import ConfirmationModal from "../modal/ConfirmationModal";
 
-const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
+const UserDetails = ({
+  user,
+  setShowUserDetails,
+  reloadUserList,
+  setReload,
+}) => {
   const axiosPrivate = useAxiosPrivate();
   const controllerRef = useRef(null);
   const [approveloading, setApproveLoading] = useState(false);
@@ -19,6 +24,21 @@ const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
   const defaultImageUrl =
     "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png";
   const [showDeleteModal, SetShowDeleteModal] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [deleteReload, setDeleteReload] = useState(false);
+
+  const handleEdit = () => {
+    setIsEditMode(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditMode(false);
+  };
+
+  const handleSubmit = () => {
+    // Submit logic here
+    setIsEditMode(false);
+  };
 
   const handleBackClick = () => {
     // Set showUserDetails to false to show the initial content
@@ -26,15 +46,70 @@ const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
   };
   const role = Cookies.get("role");
 
-  const handleDelete = () => {
-   
+  const handleDelete = async () => {
+    setDeleteReload(true);
+    const controller = new AbortController();
+    controllerRef.current = controller;
+    try {
+      const response = await axiosPrivate.delete(`/delete_member/`, {
+        data: {
+          member_id: user.id,
+        },
+        signal: controller.signal,
+      });
+      if (response.data.errors) {
+        setError(true);
+      } else {
+        toast.success("Success: Member Deleted!", {
+          position: "top-center",
+          autoClose: 2000,
+          closeOnClick: true,
+          closeButton: true,
+          hideProgressBar: false,
+          theme: "colored",
+          containerId: "1",
+        });
+        setShowUserDetails(false);
+        setReload(true);
+        // navigate('/all-members');
+      }
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.errors) {
+        const error = err.response.data.errors;
+        toast.error(error, {
+          position: "top-center",
+          autoClose: 2000,
+          closeOnClick: true,
+          closeButton: true,
+          hideProgressBar: false,
+          theme: "colored",
+          containerId: "1",
+        });
+      } else {
+        toast.error("An unexpected error occurred", {
+          position: "top-center",
+          autoClose: 2000,
+          closeOnClick: true,
+          closeButton: true,
+          hideProgressBar: false,
+          theme: "colored",
+          containerId: "1",
+        });
+      }
+    } finally {
+      SetShowDeleteModal(false);
+      setDeleteReload(false);
+    }
+
+    return () => {
+      controller.abort();
+      controllerRef.current = null;
+    };
   };
 
-  const handleCloseModal = () =>{
-    SetShowDeleteModal(false)
-  }
-
-  const handleEdit = () => {};
+  const handleCloseModal = () => {
+    SetShowDeleteModal(false);
+  };
 
   const handleApprove = async () => {
     setApproveLoading(true);
@@ -182,7 +257,7 @@ const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
         <div className="col-md-3 mb-2">
           <img
             src={user.image_url || defaultImageUrl}
-            alt="Members Image"
+            alt="Members"
             // width="230px"
             // height="390px"
             className="img-fluid rounded mt-4"
@@ -466,64 +541,91 @@ const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
       </div>
       {/* This is before the buttons */}
       <div className="row mb-4 justify-content-end">
-        {role === "Ordinary User" && user.status === "pending" && (
-          <div className="col-md-3">
-            <Button variant="edit" name="Edit" w100 />
-          </div>
-        )}
-
-        {role === "Administrator" && (
+        {isEditMode ? (
           <>
-            <div className="col-md-3 mb-3 ">
-              <Button variant="edit" name="Edit" w100 />
+            <div className="col-md-3 mb-3">
+              <Button
+                variant="secondary"
+                name="Cancel"
+                w100
+                onClick={handleCancel}
+              />
             </div>
             <div className="col-md-3 mb-3">
               <Button
-                variant="danger"
-                name="Delete"
+                variant="primary"
+                name="Submit"
                 w100
-                onClick={()=> SetShowDeleteModal(true)}
+                onClick={handleSubmit}
               />
             </div>
-            {user.status === "pending" && (
+          </>
+        ) : (
+          <>
+            {role === "Ordinary User" && user.status === "pending" && (
+              <div className="col-md-3">
+                <Button variant="edit" name="Edit" w100 onClick={handleEdit} />
+              </div>
+            )}
+            {role === "Administrator" && (
               <>
-                <div className="col-md-3 mb-3">
+                <div className="col-md-3 mb-3 ">
                   <Button
-                    name={
-                      rejectloading ? (
-                        <ButtonLoading>
-                          Rejecting
-                          <ScaleLoader color="black" height={10} />
-                        </ButtonLoading>
-                      ) : (
-                        "Reject"
-                      )
-                    }
+                    variant="edit"
+                    name="Edit"
                     w100
-                    onClick={handleReject}
-                    variant="secondary"
+                    onClick={handleEdit}
                   />
                 </div>
                 <div className="col-md-3 mb-3">
                   <Button
-                    name={
-                      approveloading ? (
-                        <ButtonLoading>
-                          Approving
-                          <ScaleLoader
-                            color={`var(--secondary-color)`}
-                            height={10}
-                          />
-                        </ButtonLoading>
-                      ) : (
-                        "Approve"
-                      )
-                    }
+                    variant="danger"
+                    name="Delete"
                     w100
-                    onClick={handleApprove}
-                    variant="primary"
+                    onClick={() => SetShowDeleteModal(true)}
                   />
                 </div>
+                {user.status === "pending" && (
+                  <>
+                    <div className="col-md-3 mb-3">
+                      <Button
+                        name={
+                          rejectloading ? (
+                            <ButtonLoading>
+                              Rejecting
+                              <ScaleLoader color="black" height={10} />
+                            </ButtonLoading>
+                          ) : (
+                            "Reject"
+                          )
+                        }
+                        w100
+                        onClick={handleReject}
+                        variant="secondary"
+                      />
+                    </div>
+                    <div className="col-md-3 mb-3">
+                      <Button
+                        name={
+                          approveloading ? (
+                            <ButtonLoading>
+                              Approving
+                              <ScaleLoader
+                                color={`var(--secondary-color)`}
+                                height={10}
+                              />
+                            </ButtonLoading>
+                          ) : (
+                            "Approve"
+                          )
+                        }
+                        w100
+                        onClick={handleApprove}
+                        variant="primary"
+                      />
+                    </div>
+                  </>
+                )}
               </>
             )}
           </>
@@ -533,7 +635,8 @@ const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
         <ConfirmationModal
           isOpen={showDeleteModal}
           onClose={handleCloseModal}
-          onLogout={handleDelete}
+          onDelete={handleDelete}
+          deleteReload={deleteReload}
         />
       )}
     </div>
