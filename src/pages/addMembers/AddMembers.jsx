@@ -178,7 +178,6 @@ const AddMembers = () => {
         },
         signal: controller.signal,
       });
-      console.log("response", response);
       return response;
     } catch (error) {
       // Error handling logic
@@ -186,7 +185,6 @@ const AddMembers = () => {
         const errors = error.response.data.errors;
         for (const [, value] of Object.entries(errors)) {
           const firstErrorMessage = value[0];
-          console.log(firstErrorMessage, "first error");
           throw new Error(firstErrorMessage); // Throw an error if there are validation errors
         }
       } else {
@@ -330,7 +328,7 @@ const AddMembers = () => {
       current_state: "",
       current_country: "",
       image_file:
-        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png",
+        "",
     });
     setFile(
       "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"
