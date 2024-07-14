@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Input from "../input/Input";
 import SelectField from "../selectField/SelectField";
 import Button from "../button/Button";
@@ -8,8 +8,18 @@ import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { ScaleLoader } from "react-spinners";
+import ConfirmationModal from "../modal/ConfirmationModal";
+import halqa from "../../data/halqa";
+import countries from "../../data/countries";
+import MemberTypes from "../../data/memberTypes";
+import { State } from "country-state-city";
 
-const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
+const UserDetails = ({
+  user,
+  setShowUserDetails,
+  reloadUserList,
+  setReload,
+}) => {
   const axiosPrivate = useAxiosPrivate();
   const controllerRef = useRef(null);
   const [approveloading, setApproveLoading] = useState(false);
@@ -18,15 +28,287 @@ const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
   const defaultImageUrl =
     "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png";
 
+  const userImage = user.image_url;
+  const [showDeleteModal, SetShowDeleteModal] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [deleteReload, setDeleteReload] = useState(false);
+  const [formData, setFormData] = useState({});
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevMember) => ({
+      ...prevMember,
+      [name]: value,
+    }));
+  };
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name,
+        surname: user.surname,
+        father_name: user.father_name,
+        date_of_birth: user.date_of_birth,
+        place_of_birth: user.place_of_birth,
+        email: user.email,
+        mobile_number: user.mobile_number,
+        whatsapp_number: user.whatsapp_number,
+        member_type: user.member_type,
+        qualification: user.qualification,
+        joining_date: user.joining_date,
+        profession: user.profession,
+        permanent_address: user.permanent_address,
+        permanent_halqa: user.permanent_halqa,
+        permanent_city: user.permanent_city,
+        permanent_state: user.permanent_state,
+        permanent_country: user.permanent_country,
+        current_address: user.current_address,
+        current_halqa: user.current_halqa,
+        current_city: user.current_city,
+        current_state: user.current_state,
+        current_country: user.current_country,
+      });
+    }
+  }, [user]);
+
+  const handleMemberTypeChange = (selectedOption) => {
+    setFormData((prevMember) => ({
+      ...prevMember,
+      member_type: selectedOption.value,
+    }));
+  };
+
+  const p_country = user.permanent_country;
+  const p_countryCode = getCodeforCountry(p_country);
+  const p_states = State.getStatesOfCountry(p_countryCode);
+  const [permanentStates, setPermanentStates] = useState(p_states);
+
+  const c_country = user.current_country;
+  const c_countryCode = getCodeforCountry(c_country);
+  const c_states = State.getStatesOfCountry(c_countryCode);
+  const [currentStates, setCurrentStates] = useState(c_states);
+
+  const handleCurrentCountryChange = (selectedOption) => {
+    setCurrentStates([]);
+    const country =
+      selectedOption.value.charAt(0).toUpperCase() +
+      selectedOption.value.slice(1);
+    const countryCode = getCodeforCountry(country);
+    const states = State.getStatesOfCountry(countryCode);
+    setCurrentStates(states);
+    setFormData((prevMember) => ({
+      ...prevMember,
+      current_country: selectedOption.value,
+    }));
+  };
+
+  const handlePermanentCountryChange = (selectedOption) => {
+    const country =
+      selectedOption.value.charAt(0).toUpperCase() +
+      selectedOption.value.slice(1);
+    const countryCode = getCodeforCountry(country);
+    const states = State.getStatesOfCountry(countryCode);
+    setPermanentStates(states);
+    setFormData((prevMember) => ({
+      ...prevMember,
+      permanent_country: selectedOption.value,
+    }));
+  };
+
+  const handlePermanentStateChange = (selectedOption) => {
+    setFormData((prevMember) => ({
+      ...prevMember,
+      permanent_state: selectedOption.value,
+    }));
+  };
+
+  const handleCurrentStateChange = (selectedOption) => {
+    setFormData((prevMember) => ({
+      ...prevMember,
+      current_state: selectedOption.value,
+    }));
+  };
+
+  const handlePermanentHalqaChange = (selectedOption) => {
+    setFormData((prevMember) => ({
+      ...prevMember,
+      permanent_halqa: selectedOption.value,
+    }));
+  };
+
+  const handleCurrentHalqaChange = (selectedOption) => {
+    setFormData((prevMember) => ({
+      ...prevMember,
+      current_halqa: selectedOption.value,
+    }));
+  };
+
+  const handleEdit = () => {
+    setIsEditMode(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditMode(false);
+    setFormData({
+      name: user.name,
+      surname: user.surname,
+      father_name: user.father_name,
+      date_of_birth: user.date_of_birth,
+      place_of_birth: user.place_of_birth,
+      email: user.email,
+      mobile_number: user.mobile_number,
+      whatsapp_number: user.whatsapp_number,
+      member_type: user.member_type,
+      qualification: user.qualification,
+      joining_date: user.joining_date,
+      profession: user.profession,
+      permanent_address: user.permanent_address,
+      permanent_halqa: user.permanent_halqa,
+      permanent_city: user.permanent_city,
+      permanent_state: user.permanent_state,
+      permanent_country: user.permanent_country,
+      current_address: user.current_address,
+      current_halqa: user.current_halqa,
+      current_city: user.current_city,
+      current_state: user.current_state,
+      current_country: user.current_country,
+    });
+  };
+
+  const handleEditSubmit = async () => {
+    //Edit Submit logic here
+    setIsEditMode(false);
+    const controller = new AbortController();
+    controllerRef.current = controller;
+    console.log("FormData being sent:", formData);
+    try {
+      const response = await axiosPrivate.put(
+        `/update_member/${user.id}/`,
+        formData, // Directly passing formData
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          signal: controller.signal,
+        }
+      );
+      if (response.data.errors) {
+        setError(true);
+      } else {
+        toast.success("Success: Edit Successful!", {
+          position: "top-center",
+          autoClose: 2000,
+          closeOnClick: true,
+          closeButton: true,
+          hideProgressBar: false,
+          theme: "colored",
+          containerId: "1",
+        });
+      }
+    } catch (err) {
+      console.log("this is err", err);
+      if (err.response && err.response.data && err.response.data.errors) {
+        const error = err.response.data.errors;
+        toast.error(error, {
+          position: "top-center",
+          autoClose: 2000,
+          closeOnClick: true,
+          closeButton: true,
+          hideProgressBar: false,
+          theme: "colored",
+          containerId: "1",
+        });
+      } else {
+        toast.error("An unexpected error occurred", {
+          position: "top-center",
+          autoClose: 2000,
+          closeOnClick: true,
+          closeButton: true,
+          hideProgressBar: false,
+          theme: "colored",
+          containerId: "1",
+        });
+      }
+    } finally {
+      reloadUserList();
+      setReload();
+    }
+
+    return () => {
+      controller.abort();
+      controllerRef.current = null;
+    };
+  };
+
   const handleBackClick = () => {
     // Set showUserDetails to false to show the initial content
     setShowUserDetails(false);
   };
   const role = Cookies.get("role");
 
-  const handleDelete = () => {};
+  const handleDelete = async () => {
+    setDeleteReload(true);
+    const controller = new AbortController();
+    controllerRef.current = controller;
+    try {
+      const response = await axiosPrivate.delete(`/delete_member/`, {
+        data: {
+          member_id: user.id,
+        },
+        signal: controller.signal,
+      });
+      if (response.data.errors) {
+        setError(true);
+      } else {
+        toast.success("Success: Member Deleted!", {
+          position: "top-center",
+          autoClose: 2000,
+          closeOnClick: true,
+          closeButton: true,
+          hideProgressBar: false,
+          theme: "colored",
+          containerId: "1",
+        });
+        setShowUserDetails(false);
+        setReload(true);
+        // navigate('/all-members');
+      }
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.errors) {
+        const error = err.response.data.errors;
+        toast.error(error, {
+          position: "top-center",
+          autoClose: 2000,
+          closeOnClick: true,
+          closeButton: true,
+          hideProgressBar: false,
+          theme: "colored",
+          containerId: "1",
+        });
+      } else {
+        toast.error("An unexpected error occurred", {
+          position: "top-center",
+          autoClose: 2000,
+          closeOnClick: true,
+          closeButton: true,
+          hideProgressBar: false,
+          theme: "colored",
+          containerId: "1",
+        });
+      }
+    } finally {
+      SetShowDeleteModal(false);
+      setDeleteReload(false);
+    }
 
-  const handleEdit = () => {};
+    return () => {
+      controller.abort();
+      controllerRef.current = null;
+    };
+  };
+
+  const handleCloseModal = () => {
+    SetShowDeleteModal(false);
+  };
 
   const handleApprove = async () => {
     setApproveLoading(true);
@@ -173,39 +455,72 @@ const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
       <div className="row">
         <div className="col-md-3 mb-2">
           <img
-            src={user.image_url || defaultImageUrl}
-            alt="Members Image"
-            // width="230px"
-            // height="390px"
+            src={userImage || defaultImageUrl}
+            alt="Members"
             className="img-fluid rounded mt-4"
           />
         </div>
         <div className="col-md-9 ">
           <div className="row">
             <div className="col-md-6  mb-3">
-              <Input label="Name" value={user.name} disabled />
+              <Input
+                label="Name"
+                name="name"
+                value={formData.name}
+                disabled={!isEditMode}
+                onChange={handleChange}
+              />
             </div>
             <div className="col-md-6  mb-3">
-              <Input label="Surname" value={user.surname} disabled />
+              <Input
+                label="Surname"
+                name="surname"
+                value={formData.surname}
+                disabled={!isEditMode}
+                onChange={handleChange}
+              />
             </div>
           </div>
           <div className="row">
             <div className="col-md-6 mb-3">
-              <Input label="Father Name" value={user.father_name} disabled />
+              <Input
+                label="Father Name"
+                name="father_name"
+                value={formData.father_name}
+                disabled={!isEditMode}
+                onChange={handleChange}
+              />
             </div>
             <div className="col-md-6 mb-3">
-              <Input label="Email" value={user.email} disabled />
+              <Input
+                label="Email"
+                name="email"
+                type="email"
+                value={formData.email}
+                disabled={!isEditMode}
+                onChange={handleChange}
+              />
             </div>
           </div>
           <div className="row">
             <div className="col-md-6 mb-3">
-              <Input label="Phone Number" value={user.mobile_number} disabled />
+              <Input
+                label="Phone Number"
+                value={formData.mobile_number}
+                name="mobile_number"
+                type="Number"
+                disabled={!isEditMode}
+                onChange={handleChange}
+              />
             </div>
             <div className="col-md-6 mb-3">
               <Input
                 label="Whatsapp Number"
-                value={user.whatsapp_number}
-                disabled
+                name="whatsapp_number"
+                type="Number"
+                value={formData.whatsapp_number}
+                disabled={!isEditMode}
+                onChange={handleChange}
               />
             </div>
           </div>
@@ -213,27 +528,40 @@ const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
             <div className="col-md-6 mb-3">
               <Input
                 label="Qualification"
-                value={user.qualification}
-                disabled
+                value={formData.qualification}
+                disabled={!isEditMode}
+                onChange={handleChange}
+                name="qualification"
               />
             </div>
             <div className="col-md-6 mb-3">
-              <Input label="Profession" value={user.profession} disabled />
+              <Input
+                label="Profession"
+                value={formData.profession}
+                disabled={!isEditMode}
+                onChange={handleChange}
+                name="profession"
+              />
             </div>
           </div>
           <div className="row ">
             <div className="col-md-6 mb-3">
               <Input
                 label="Place of Birth"
-                value={user.place_of_birth}
-                disabled
+                name="place_of_birth"
+                value={formData.place_of_birth}
+                disabled={!isEditMode}
+                onChange={handleChange}
               />
             </div>
             <div className="col-md-6 mb-3">
               <Input
                 label="Date of Birth"
-                value={user.date_of_birth}
-                disabled
+                type="date"
+                name="date_of_birth"
+                value={formData.date_of_birth}
+                disabled={!isEditMode}
+                onChange={handleChange}
               />
             </div>
           </div>
@@ -244,17 +572,27 @@ const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
           <Input
             label="Membership Number"
             disabled
-            value={user.membership_number}
+            value={formData.membership_number}
           />
         </div>
         <div className="col-md-4 mb-3">
-          <Input label="Joining Date" disabled value={user.joining_date} />
+          <Input
+            label="Joining Date"
+            type="date"
+            name="joining_date"
+            disabled={!isEditMode}
+            value={formData.joining_date}
+            onChange={handleChange}
+          />
         </div>
         <div className="col-md-4 mb-3">
           <SelectField
             label="Type of Member"
-            disabled={true}
-            value={user.member_type}
+            disabled={!isEditMode}
+            value={formData.member_type}
+            options={MemberTypes}
+            name="member_type"
+            onChange={handleMemberTypeChange}
           />
         </div>
       </div>
@@ -265,25 +603,42 @@ const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
         <div className="col-md-3 mb-3">
           <SelectField
             label="Country"
-            disabled
-            value={user.address.current_country}
+            disabled={!isEditMode}
+            value={formData.current_country}
+            options={countries}
+            onChange={handleCurrentCountryChange}
+            name="current_country"
           />
         </div>
         <div className="col-md-3 mb-3">
           <SelectField
             label="State"
-            disabled
-            value={user.address.current_state}
+            disabled={!isEditMode}
+            value={formData.current_state}
+            options={currentStates
+              .map((state) => state.name)
+              .map((name) => ({ value: name, label: name }))}
+            onChange={handleCurrentStateChange}
+            name="current_state"
           />
         </div>
         <div className="col-md-3 mb-3">
-          <Input label="City" disabled value={user.address.current_city} />
+          <Input
+            label="City"
+            disabled={!isEditMode}
+            value={formData.current_city}
+            onChange={handleChange}
+            name="current_city"
+          />
         </div>
         <div className="col-md-3 mb-3">
           <SelectField
             label="Halqa"
-            disabled
-            value={user.address.current_halqa}
+            disabled={!isEditMode}
+            value={formData.current_halqa}
+            options={halqa}
+            onChange={handleCurrentHalqaChange}
+            name="current_halqa"
           />
         </div>
       </div>
@@ -291,8 +646,10 @@ const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
         <div className="col-md-12">
           <Input
             label="Address"
-            value={user.address.current_address}
-            disabled
+            value={formData.current_address}
+            disabled={!isEditMode}
+            onChange={handleChange}
+            name="current_address"
           />
         </div>
       </div>
@@ -303,25 +660,42 @@ const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
         <div className="col-md-3 mb-3">
           <SelectField
             label="Country"
-            disabled
-            value={user.address.permanent_country}
+            disabled={!isEditMode}
+            value={formData.permanent_country}
+            options={countries}
+            onChange={handlePermanentCountryChange}
+            name="permanent_country"
           />
         </div>
         <div className="col-md-3 mb-3">
           <SelectField
             label="State"
-            disabled
-            value={user.address.permanent_state}
+            disabled={!isEditMode}
+            value={formData.permanent_state}
+            options={permanentStates
+              .map((state) => state.name)
+              .map((name) => ({ value: name, label: name }))}
+            onChange={handlePermanentStateChange}
+            name="permanent_state"
           />
         </div>
         <div className="col-md-3 mb-3">
-          <Input label="City" disabled value={user.address.permanent_city} />
+          <Input
+            label="City"
+            disabled
+            value={formData.permanent_city}
+            onChange={handleChange}
+            name="permanent_city"
+          />
         </div>
         <div className="col-md-3 mb-3">
           <SelectField
             label="Halqa"
-            disabled
-            value={user.address.permanent_halqa}
+            disabled={!isEditMode}
+            value={formData.permanent_halqa}
+            options={halqa}
+            onChange={handlePermanentHalqaChange}
+            name="permanent_halqa"
           />
         </div>
       </div>
@@ -329,8 +703,10 @@ const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
         <div className="col-md-12 mb-3">
           <Input
             label="Address"
-            value={user.address.permanent_address}
-            disabled
+            value={formData.permanent_address}
+            disabled={!isEditMode}
+            onChange={handleChange}
+            name="permanent_address"
           />
         </div>
       </div>
@@ -458,69 +834,104 @@ const UserDetails = ({ user, setShowUserDetails, reloadUserList }) => {
       </div>
       {/* This is before the buttons */}
       <div className="row mb-4 justify-content-end">
-        {role === "Ordinary User" && user.status === "pending" && (
-          <div className="col-md-3">
-            <Button variant="edit" name="Edit" w100 />
-          </div>
-        )}
-
-        {role === "Administrator" && (
+        {isEditMode ? (
           <>
-            <div className="col-md-3 mb-3 ">
-              <Button variant="edit" name="Edit" w100 />
+            <div className="col-md-3 mb-3">
+              <Button
+                variant="secondary"
+                name="Cancel"
+                w100
+                onClick={handleCancel}
+              />
             </div>
             <div className="col-md-3 mb-3">
               <Button
-                variant="danger"
-                name="Delete"
+                variant="primary"
+                name="Submit"
                 w100
-                onClick={handleDelete}
+                onClick={handleEditSubmit}
               />
             </div>
-            {user.status === "pending" && (
+          </>
+        ) : (
+          <>
+            {role === "Ordinary User" && user.status === "pending" && (
+              <div className="col-md-3">
+                <Button variant="edit" name="Edit" w100 onClick={handleEdit} />
+              </div>
+            )}
+            {role === "Administrator" && (
               <>
-                <div className="col-md-3 mb-3">
+                <div className="col-md-3 mb-3 ">
                   <Button
-                    name={
-                      rejectloading ? (
-                        <ButtonLoading>
-                          Rejecting
-                          <ScaleLoader color="black" height={10} />
-                        </ButtonLoading>
-                      ) : (
-                        "Reject"
-                      )
-                    }
+                    variant="edit"
+                    name="Edit"
                     w100
-                    onClick={handleReject}
-                    variant="secondary"
+                    onClick={handleEdit}
                   />
                 </div>
                 <div className="col-md-3 mb-3">
                   <Button
-                    name={
-                      approveloading ? (
-                        <ButtonLoading>
-                          Approving
-                          <ScaleLoader
-                            color={`var(--secondary-color)`}
-                            height={10}
-                          />
-                        </ButtonLoading>
-                      ) : (
-                        "Approve"
-                      )
-                    }
+                    variant="danger"
+                    name="Delete"
                     w100
-                    onClick={handleApprove}
-                    variant="primary"
+                    onClick={() => SetShowDeleteModal(true)}
                   />
                 </div>
+                {user.status === "pending" && (
+                  <>
+                    <div className="col-md-3 mb-3">
+                      <Button
+                        name={
+                          rejectloading ? (
+                            <ButtonLoading>
+                              Rejecting
+                              <ScaleLoader color="black" height={10} />
+                            </ButtonLoading>
+                          ) : (
+                            "Reject"
+                          )
+                        }
+                        w100
+                        onClick={handleReject}
+                        variant="secondary"
+                      />
+                    </div>
+                    <div className="col-md-3 mb-3">
+                      <Button
+                        name={
+                          approveloading ? (
+                            <ButtonLoading>
+                              Approving
+                              <ScaleLoader
+                                color={`var(--secondary-color)`}
+                                height={10}
+                              />
+                            </ButtonLoading>
+                          ) : (
+                            "Approve"
+                          )
+                        }
+                        w100
+                        onClick={handleApprove}
+                        variant="primary"
+                      />
+                    </div>
+                  </>
+                )}
               </>
             )}
           </>
         )}
       </div>
+      {showDeleteModal && (
+        <ConfirmationModal
+          isOpen={showDeleteModal}
+          onClose={handleCloseModal}
+          onDelete={handleDelete}
+          deleteReload={deleteReload}
+        />
+      )}
     </div>
   );
 };
@@ -545,3 +956,26 @@ const ButtonLoading = styled.div`
   align-items: center;
   gap: 0.5rem;
 `;
+
+export const Countries = {
+  India: "IN",
+  China: "CN",
+  Singapore: "SG",
+  Malaysia: "MY",
+  Hongkong: "HK",
+  Taiwan: "TW",
+  Thailand: "TH",
+  Iran: "IR",
+  UAE: "AE",
+  Bahrain: "BH",
+  Kuwait: "KW",
+  Oman: "OM",
+  KSA: "SA",
+  Qatar: "QA",
+  UK: "GB",
+  USA: "US",
+};
+
+export const getCodeforCountry = (name) => {
+  return Countries[name];
+};

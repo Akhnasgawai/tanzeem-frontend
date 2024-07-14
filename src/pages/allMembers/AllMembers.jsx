@@ -33,6 +33,7 @@ const AllMembers = () => {
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [userDetails, setUserDetails] = useState();
   const [selectedMemberId, setSelectedMemberId] = useState(null);
+  const [reload, setReload] = useState(false);
   const [searchCriteria, setSearchCriteria] = useState({
     query: "",
     mobileNumber: "",
@@ -40,6 +41,7 @@ const AllMembers = () => {
     state: "",
     city: "",
     halqa: "",
+    member_id: "",
     page: currentPage,
   });
 
@@ -124,7 +126,7 @@ const AllMembers = () => {
     return () => {
       controller.abort();
     };
-  }, [searchCriteria, currentPage]);
+  }, [searchCriteria, currentPage, reload]);
 
   const handleRowClick = (member_id) => {
     // alert(JSON.stringify(member_id, null, 2));
@@ -141,13 +143,7 @@ const AllMembers = () => {
         );
         console.log("response", response);
         if (response.data.errors) {
-          // setError(response.data.errors);
-          // setMemberlist([]);
         } else {
-          // const transformedData = transformMemberData(response.data.results);
-          // setTotalCount(response.data.count);
-          // setMemberlist(transformedData);
-          // setError(null);
           setUserDetails(response.data.result);
         }
         // setTableLoading(false);
@@ -180,11 +176,12 @@ const AllMembers = () => {
         <UserDetails
           user={userDetails}
           setShowUserDetails={setShowUserDetails}
+          setReload={setReload}
           reloadUserList={() => {
             handleRowClick(selectedMemberId);
           }}
         />
-      ) : ( 
+      ) : (
         <>
           <SearchComponent
             setSearchCriteria={setSearchCriteria}

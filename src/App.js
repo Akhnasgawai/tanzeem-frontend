@@ -27,16 +27,20 @@ import UserRoute from "./routes/UserRoute"; // Corrected import path
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Cookies from "js-cookie";
 import ChangePassword from "./pages/changePassword/ChangePassword";
+import Sign_In from "./pages/signin/Sign_In";
+import { useMediaQuery } from "react-responsive";
 
 function App() {
   const [collapseState, setCollapsedState] = useState(false);
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   return (
     <AuthProvider>
       <Router>
         <ToastContainer containerId="1" />
         <Routes>
-          <Route path="/signin" element={<Signin />} />
+          <Route path="/signin" element={isMobile ? <Signin /> : <Sign_In />} />
+
           <Route
             path="*"
             element={
