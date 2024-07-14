@@ -128,7 +128,7 @@ const Sign_In = () => {
     }
   };
 
-  const circleSizes = [100, 20, 140, 50,  220]; // Sizes for each circle
+  const circleSizes = [100, 20, 140, 50, 20]; // Sizes for each circle
 
   return (
     <Container>
@@ -149,7 +149,6 @@ const Sign_In = () => {
           {circleSizes.map((size, index) => (
             <CirclePair key={index}>
               <WhiteCircle size={size} />
-
             </CirclePair>
           ))}
         </CirclesContainer>
@@ -237,16 +236,6 @@ const Left = styled.div`
   align-items: center;
 `;
 
-const Middle = styled.div`
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-`;
-
 const Right = styled.div`
   flex: 1;
   background: linear-gradient(to right, #96d6c7, #387466);
@@ -296,6 +285,16 @@ const Wrapper = styled.div`
   margin: 0 auto;
 `;
 
+const Middle = styled.div`
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+`;
+
 const CirclesContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -306,6 +305,21 @@ const CirclePair = styled.div`
   display: flex;
   align-items: center;
   margin: 0;
+`;
+
+const MiddleContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid black;
+  margin-left: 20%;
+`;
+
+const MiddlePair = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 0;
+  border: 1px solid pink;
 `;
 
 const MiddleCircle = styled.div`
