@@ -44,6 +44,7 @@ const PendingMembers = () => {
     city: "",
     halqa: "",
     member_id: "",
+    status: "pending", // Add status to search criteria
     page: currentPage,
   });
 
@@ -186,6 +187,7 @@ const PendingMembers = () => {
           <SearchComponent
             setSearchCriteria={setSearchCriteria}
             setErrorMsg={setErrorMsg}
+            status="pending" // Pass status to SearchComponent
           />
           {tableLoading ? (
             <SkeletonTableView tableHeadings={tableHeadings} />

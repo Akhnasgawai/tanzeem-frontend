@@ -186,6 +186,7 @@ const AllMembers = () => {
           <SearchComponent
             setSearchCriteria={setSearchCriteria}
             setErrorMsg={setErrorMsg}
+            status=""
           />
           {tableLoading ? (
             <SkeletonTableView tableHeadings={tableHeadings} />
