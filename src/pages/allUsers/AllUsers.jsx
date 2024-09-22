@@ -1,17 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef,  } from "react";
 import TableView from "../../components/tableview/TableView";
 import SkeletonTableView from "../../components/skeletontableview/SkeletonTableView";
 import ErrorTable from "../../components/tableview/ErrorTable";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import Button from "../../components/button/Button";
+import EnableDisableModal from "../../components/modal/EnableDisableModal";
+import { toast } from "react-toastify";
+import Cookies from "js-cookie";
 
 const AllUsers = () => {
   const axiosPrivate = useAxiosPrivate();
+  const controllerRef = useRef(null);
   const tableHeadings = [
     "Full Name",
     "Mobile Number",
     "Email  Address",
     "Type Of User",
     "Active",
+    "Action",
   ];
   const [memberlist, setMemberlist] = useState([]);
   const [tableLoading, setTableLoading] = useState(true);
@@ -21,77 +27,44 @@ const AllUsers = () => {
   );
   const [totalCount, setTotalCount] = useState();
   const [currentPage, setCurrentPage] = useState(1);
+  const [loadPage, setLoadPage] = useState(false);
+  const name = Cookies.get("username");
+  const email = Cookies.get("email");
 
-  // useEffect(() => {
-  //   const response = [
-  //     {
-  //       id: "194e1a6e-0aaa-4d93-b10b-392273f171b8",
-  //       full_name: "Test User",
-  //       email: "akhnas.m@pacewisdom.com",
-  //       groups: [
-  //         {
-  //           id: 2,
-  //           name: "Ordinary User",
-  //         },
-  //       ],
-  //       is_active: "True",
-  //       mobile_number: "9611767704",
-  //     },
-  //     {
-  //       id: "3d9fdf4b-7e13-4aaa-9794-10500d304deb",
-  //       full_name: "Fathima Desai",
-  //       email: "fatsdesai2018@gmail.com",
-  //       groups: [
-  //         {
-  //           id: 1,
-  //           name: "Administrator",
-  //         },
-  //       ],
-  //       is_active: "True",
-  //       mobile_number: "8105209115",
-  //     },
-  //     {
-  //       id: "3b838658-8494-4b26-8f3f-eafd0f46f50c",
-  //       full_name: "fathima",
-  //       email: "fathima.d@pacewisdom.com",
-  //       groups: [
-  //         {
-  //           id: 2,
-  //           name: "Ordinary User",
-  //         },
-  //       ],
-  //       is_active: "True",
-  //       mobile_number: "8105209115",
-  //     },
-  //     {
-  //       id: "1ddcd885-3578-4eb2-9d57-e4ad345c827e",
-  //       full_name: "John",
-  //       email: "akhnasg@gmail.com",
-  //       groups: [
-  //         {
-  //           id: 1,
-  //           name: "Administrator",
-  //         },
-  //       ],
-  //       is_active: "True",
-  //       mobile_number: "",
-  //     },
-  //   ];
 
-  //   setMemberlist(transformedData);
-  // }, []);
+  // State for modal
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [actionType, setActionType] = useState(null);
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
-  const transformMemberData = (data) => {
-    return data.map((user) => ({
-      name: user.full_name,
-      mobile_number: user.mobile_number || "N/A",
-      email: user.email,
-      type_of_user: user.groups[0].name,
-      active: user.is_active === "True" ? "Yes" : "No",
-    }));
+  // Function to open modal and set the selected user and action type
+  const handleOpenModal = (user) => {
+    setSelectedUser(user);
+    setActionType(user.is_active === "True" ? "disable" : "enable");
+    setModalOpen(true);
   };
 
- useEffect(() => {
+  const transformMemberData = (data) => {
+    return data
+      .filter((user) => user.email !== email) // Filter out the user with the matching email
+      .map((user) => ({
+        name: user.full_name,
+        mobile_number: user.mobile_number || "N/A",
+        email: user.email,
+        type_of_user: user.groups[0].name,
+        active: user.is_active === "True" ? "Yes" : "No",
+        button: (
+          <Button
+            name={user.is_active === "True" ? "Disable" : "Enable"}
+            variant={user.is_active === "True" ? "danger" : "primary"}
+            onClick={() => handleOpenModal(user)}
+          />
+        ),
+      }));
+  };
+
+  useEffect(() => {
     setTableLoading(true);
     const controller = new AbortController();
     const getMembers = async () => {
@@ -120,12 +93,66 @@ const AllUsers = () => {
     return () => {
       controller.abort();
     };
-  }, []);
+  }, [loadPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected + 1);
- 
   };
+
+  const handleConfirmAction = async () => {
+    setConfirmLoading(true);
+    const controller = new AbortController();
+    controllerRef.current = controller;
+  
+    try {
+      // API call to update user status (passing is_active as a Boolean)
+      await axiosPrivate.put(
+        `/update_user_status/${selectedUser.id}/`,
+        { is_active: actionType === "enable" },  // is_active is true for enabling, false for disabling
+        {
+          signal: controller.signal,  // Pass the AbortController signal
+        }
+      );
+  
+      // Update the user list in local state
+      setMemberlist((prevList) =>
+        prevList.map((user) =>
+          user.email === selectedUser.email
+            ? { ...user, active: actionType === "enable" ? "Yes" : "No" }
+            : user
+        )
+      );
+  
+      // Show success toast notification
+      toast.success(
+        `User ${actionType === "enable" ? "enabled" : "disabled"} successfully`,
+        {
+          position: "top-center",
+          autoClose: 2000,
+          theme: "colored",
+          containerId: "1",
+        }
+      );
+  
+      // Close modal
+      setModalOpen(false);
+    } catch (error) {
+      console.error("Error updating user status:", error);
+  
+      // Show error toast notification
+      toast.error("Error updating user status", {
+        position: "top-center",
+        autoClose: 2000,
+        theme: "colored",
+        containerId: "1",
+      });
+    } finally {
+      // Reset loading state
+      setConfirmLoading(false);
+      setLoadPage(!loadPage)
+    }
+  };
+  
 
   return (
     <div className="px-4">
@@ -144,6 +171,13 @@ const AllUsers = () => {
           handlePageChange={handlePageChange}
         />
       )}
+      <EnableDisableModal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        onConfirm={handleConfirmAction}
+        confirmReload={confirmLoading}
+        actionType={actionType}
+      />
     </div>
   );
 };
