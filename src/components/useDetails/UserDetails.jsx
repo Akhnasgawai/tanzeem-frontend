@@ -174,6 +174,19 @@ const UserDetails = ({
     });
   };
 
+  const [file, setFile] = useState(user.image_url);
+  const handleSetImage = (e) => {
+    // Create an object URL for the selected image to preview
+    const selectedFile = e.target.files[0];
+    setFile(URL.createObjectURL(selectedFile));
+  
+    // Update the formData with the new file
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      image_file: selectedFile, // Add the selected image file to formData
+    }));
+  };
+
   const handleEditSubmit = async () => {
     //Edit Submit logic here
     setIsEditMode(false);
@@ -454,11 +467,36 @@ const UserDetails = ({
       </div>
       <div className="row">
         <div className="col-md-3 mb-2">
-          <img
-            src={userImage || defaultImageUrl}
-            alt="Members"
-            className="img-fluid rounded mt-4"
-          />
+          {!isEditMode && (
+            <img
+              src={userImage || defaultImageUrl}
+              alt="Members"
+              className="img-fluid rounded mt-4"
+            />
+          )}
+
+          {isEditMode && (
+            <div className="col m-0 d-flex flex-column justify-content-center align-items-center">
+              <img
+                src={file || userImage || defaultImageUrl} // Display uploaded image if available
+                alt="user"
+                className="img-fluid rounded m-3"
+              />
+              <label
+                htmlFor="imageUpload"
+                className="text-center cursor p-2 rounded mt-3"
+                style={{ background: "#326f61", color: "#fff" }}
+              >
+                Choose an Image
+                <input
+                  type="file"
+                  id="imageUpload"
+                  onChange={handleSetImage}
+                  style={{ display: "none" }}
+                />
+              </label>
+            </div>
+          )}
         </div>
         <div className="col-md-9 ">
           <div className="row">

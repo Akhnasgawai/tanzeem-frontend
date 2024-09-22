@@ -15,7 +15,7 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg, status }) => {
 
   const [searchFields, setSearchFields] = useState({
     query: "",
-    mobileNumber: "",
+    mobile_number: "",
     country: "",
     state: "",
     city: "",
@@ -72,7 +72,7 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg, status }) => {
   const handleCancel = () => {
     setSearchCriteria({
       query: "",
-      mobileNumber: "",
+      mobile_number: "",
       country: "",
       state: "",
       city: "",
@@ -82,7 +82,7 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg, status }) => {
     });
     setSearchFields({
       query: "",
-      mobileNumber: "",
+      mobile_number: "",
       country: "",
       state: "",
       city: "",
@@ -167,11 +167,11 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg, status }) => {
         </div>
         <div className="col-md-4 mb-3">
           <Input
-            name="mobileNumber"
+            name="mobile_number"
             label="Search By Mobile Number"
             placeholder="Mobile Number"
             type="Number"
-            value={searchFields.mobileNumber}
+            value={searchFields.mobile_number}
             onChange={handleInputChange}
           />
         </div>

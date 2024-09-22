@@ -102,7 +102,7 @@ const AllMembers = () => {
     const controller = new AbortController();
     const getMembers = async () => {
       try {
-        const response = await axiosPrivate.get("/member-list", {
+        const response = await axiosPrivate.get("/member-list/", {
           params: searchCriteria,
           signal: controller.signal,
         });
@@ -136,7 +136,7 @@ const AllMembers = () => {
     const getMembers = async () => {
       try {
         const response = await axiosPrivate.get(
-          `/get-member-by-member-id/${member_id}`,
+          `/get-member-by-member-id/${member_id}/`,
           {
             signal: controller.signal,
           }
