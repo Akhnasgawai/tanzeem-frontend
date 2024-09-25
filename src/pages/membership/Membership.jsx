@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import TableView from "../../components/tableview/TableView";
-import styled from "styled-components";
 import SelectField from "../../components/selectField/SelectField";
 import SkeletonTableView from "../../components/skeletontableview/SkeletonTableView";
 import ErrorTable from "../../components/tableview/ErrorTable";
@@ -65,7 +64,7 @@ const Membership = () => {
     setYear(selectedOption.value);
   };
 
-  https: useEffect(() => {
+   useEffect(() => {
     setTableLoading(true);
     const controller = new AbortController();
     const getMembers = async () => {

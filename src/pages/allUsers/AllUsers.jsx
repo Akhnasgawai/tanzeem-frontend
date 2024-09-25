@@ -28,7 +28,6 @@ const AllUsers = () => {
   const [totalCount, setTotalCount] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [loadPage, setLoadPage] = useState(false);
-  const name = Cookies.get("username");
   const email = Cookies.get("email");
 
 

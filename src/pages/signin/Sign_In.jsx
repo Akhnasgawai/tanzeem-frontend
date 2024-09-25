@@ -5,9 +5,8 @@ import Button from "../../components/button/Button";
 import SelectField from "../../components/selectField/SelectField";
 import UserTypes from "../../data/userTypes";
 import axios from "axios";
-import Bubbles from "react-loading";
 import { ScaleLoader } from "react-spinners";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../../context/AuthContext";
@@ -307,30 +306,7 @@ const CirclePair = styled.div`
   margin: 0;
 `;
 
-const MiddleContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border: 1px solid black;
-  margin-left: 20%;
-`;
 
-const MiddlePair = styled.div`
-  display: flex;
-  align-items: center;
-  margin: 0;
-  border: 1px solid pink;
-`;
-
-const MiddleCircle = styled.div`
-  width: ${(props) => props.size}px;
-  height: ${(props) => props.size}px;
-  background: radial-gradient(circle, white 0%, #22473e 100%);
-  border-radius: 50%;
-  opacity: 0.9;
-  margin-left: -120px;
-  z-index: 0;
-`;
 
 const WhiteCircle = styled.div`
   width: ${(props) => props.size}px;

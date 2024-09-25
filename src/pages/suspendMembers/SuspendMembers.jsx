@@ -72,9 +72,7 @@ const SuspendMembers = () => {
     };
   }, [currentPage, suspendModal]);
 
-  const handleClick = (member) => {
-    alert(JSON.stringify(member, null, 2));
-  };
+
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected + 1);

@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import Cookies from "js-cookie";
 
 const useRefreshToken = () => {
-  const { login, logout } = useAuth();
+  const { logout } = useAuth();
 
   const refresh = async () => {
     try {
@@ -19,7 +19,6 @@ const useRefreshToken = () => {
       );
       const newAccessToken = response.data.access;
       console.log("newAccessTOken", newAccessToken);
-      const role = Cookies.get("role");
 
       // Store the new access token in cookies
       Cookies.set("accessToken", newAccessToken);

@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, Settings, UserPlus } from "lucide-react";
+import { ArrowLeft, ArrowRight, UserPlus } from "lucide-react";
 import React, { useEffect } from "react";
 import { useMediaQuery } from "react-responsive";
 import { NavLink } from "react-router-dom";
@@ -7,7 +7,6 @@ import {
   Plus,
   Hourglass,
   User,
-  UserCog,
   Contact,
   IndianRupee,
   Ban,
@@ -198,7 +197,3 @@ const StyledCircle = styled.div`
   }
 `;
 
-const BottomMenuContainer = styled.div`
-  position: absolute;
-  bottom: 0;
-`;

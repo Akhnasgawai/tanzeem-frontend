@@ -21,9 +21,7 @@ import Membership from "./pages/membership/Membership";
 import Signin from "./pages/signin/Signin";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { AuthProvider, useAuth } from "./context/AuthContext";
-import AdminRoute from "./routes/ProtectedRoute";
-import UserRoute from "./routes/UserRoute"; // Corrected import path
+import { AuthProvider, useAuth } from "./context/AuthContext";// Corrected import path
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Cookies from "js-cookie";
 import ChangePassword from "./pages/changePassword/ChangePassword";

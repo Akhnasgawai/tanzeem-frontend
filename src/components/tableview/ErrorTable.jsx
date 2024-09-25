@@ -23,9 +23,7 @@ const SkeletonTableView = ({ tableHeadings, errorMessage }) => {
     borderTopRightRadius: "0px",
   };
 
-  const TableDataStyle = {
-    height: "55px",
-  };
+
 
   return (
     <div className="table-container">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import Input from "../../components/input/Input";
 import Button from "../button/Button";
@@ -43,7 +43,7 @@ const PaymentModal = ({ isOpen, onClose, onPayment }) => {
         setError(true);
         setFullName("");
       } else {
-        const { name, surname, id } = response.data.result;
+        const { name, surname } = response.data.result;
         setFullName(`${name} ${surname}`);
         setError(false);
       }
