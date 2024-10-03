@@ -36,13 +36,13 @@ const PendingMembers = () => {
   const [selectedMemberId, setSelectedMemberId] = useState(null);
   const [reload, setReload] = useState(false);
   const [searchCriteria, setSearchCriteria] = useState({
-    query: "",
-    mobileNumber: "",
-    country: "",
-    state: "",
-    city: "",
-    halqa: "",
-    member_id: "",
+    // query: "",
+    // mobileNumber: "",
+    // country: "",
+    // state: "",
+    // city: "",
+    // halqa: "",
+    // member_id: "",
     status: "pending", // Add status to search criteria
     page: currentPage,
   });

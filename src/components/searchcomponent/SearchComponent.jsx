@@ -71,14 +71,7 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg, status }) => {
 
   const handleCancel = () => {
     setSearchCriteria({
-      query: "",
-      mobile_number: "",
-      country: "",
-      state: "",
-      city: "",
-      halqa: "",
       page: 1,
-      member_id: "",
     });
     setSearchFields({
       query: "",
@@ -94,14 +87,13 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg, status }) => {
 
   const handleDownload = async () => {
     let toastId;
-  
+
     try {
       const queryParams = new URLSearchParams({
         ...searchFields,
         status, // Include status in the query parameters
       }).toString();
 
-  
       toastId = toast.loading("Downloading... Please wait.", {
         position: "bottom-right",
         autoClose: false,
@@ -110,21 +102,21 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg, status }) => {
         hideProgressBar: true,
         theme: "colored",
       });
-  
+
       const response = await axiosPrivate.get(
         `/download_member_list?${queryParams}`,
         {
           responseType: "blob", // important for downloading files
         }
       );
-  
+
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
       link.setAttribute("download", "member_list.xlsx");
       document.body.appendChild(link);
       link.click();
-  
+
       // Update the toast to success
       toast.update(toastId, {
         render: "Download completed successfully!",
@@ -138,7 +130,7 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg, status }) => {
     } catch (error) {
       console.error("Download failed", error);
       setErrorMsg("Failed to download the member list.");
-  
+
       // Update the toast to show an error
       toast.update(toastId, {
         render: "Failed to download the member list.",
@@ -151,10 +143,10 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg, status }) => {
       });
     }
   };
-  
+
   return (
     <div>
-     <ToastContainer/>
+      <ToastContainer />
       <div className="row">
         <div className="col-md-4 mb-3">
           <Input
@@ -166,23 +158,23 @@ const SearchComponent = ({ setSearchCriteria, setErrorMsg, status }) => {
           />
         </div>
         <div className="col-md-4 mb-3">
-          <Input
-            name="mobile_number"
+          {/* <Input
+            name="mobileNumber"
             label="Search By Mobile Number"
             placeholder="Mobile Number"
             type="Number"
             value={searchFields.mobile_number}
             onChange={handleInputChange}
-          />
+          /> */}
         </div>
         <div className="col-md-4 mb-3">
-          <Input
+          {/* <Input
             name="member_id"
             label="Search By Member ID"
             placeholder="Member ID"
             value={searchFields.member_id}
             onChange={handleInputChange}
-          />
+          /> */}
         </div>
       </div>
       <div className="row">
